@@ -4,10 +4,23 @@
  */
 package com.tba.repositories;
 
+import com.tba.pojo.User;
+
 /**
  *
  * @author Admin
  */
 public interface UserRepository {
-    
+
+    User getUserByUsername(String username);
+
+    boolean existsByUsername(String username);
+
+    User addUser(User u);
+
+    void addUserWithFormBinding(User user);
+
+    boolean authenticate(String username, String password);
+
+    int getUserIdByUsername(String username);
 }
