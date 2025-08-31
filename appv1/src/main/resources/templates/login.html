@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Trang Đăng Nhập</title>
+
+        <!-- Bootstrap 5 CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" th:href="@{/css/login.css}">
+    </head>
+
+    <body class="bg-light">
+        <div class="container vh-100 d-flex justify-content-center align-items-center">
+            <div class="col-md-5">
+                <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <h2 class="text-center mb-4">Đăng Nhập</h2>
+
+                        <!-- Thông báo lỗi -->
+                        <div class="alert alert-danger" th:if="${param.error}" role="alert">
+                            ❌ Sai tên đăng nhập hoặc mật khẩu!
+                        </div>
+
+                        <!-- Thông báo khi logout -->
+                        <div class="alert alert-success" th:if="${param.logout}" role="alert">
+                            ✅ Bạn đã đăng xuất thành công.
+                        </div>
+
+                        <!-- Form login -->
+                        <form method="post" th:action="@{/login}">
+                            <div class="mb-3">
+                                <input type="text" class="form-control form-control-lg"
+                                       name="username" placeholder="Tên đăng nhập"
+                                       autocomplete="off" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="password" class="form-control form-control-lg"
+                                       name="password" placeholder="Mật khẩu" required>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    Đăng Nhập
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Footer -->
+                        <div class="text-center mt-3">
+                            <p>Bạn chưa có tài khoản?
+                                <a th:href="@{/register}" class="text-decoration-none">Đăng ký ngay</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
