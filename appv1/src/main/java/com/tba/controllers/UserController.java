@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
  */
 @Controller
 public class UserController {
+
     @Autowired
     private UserService UserService;
 
@@ -28,14 +29,13 @@ public class UserController {
     public String loginView() {
         return "login";
     }
-    
+
     @GetMapping("/user")
     public String showCreateUserForm(Model model) {
         model.addAttribute("user", new User());
         model.addAttribute("roles", UserRole.values());
         return "user";
     }
-
 
     @PostMapping("/user")
     public String createUser(Model model, @Valid @ModelAttribute("user") User user) {
@@ -44,11 +44,17 @@ public class UserController {
             model.addAttribute("roles", UserRole.values());
             this.UserService.addUserWithFormBinding(user);
             model.addAttribute("successMessage", "Tạo tài khoản thành công");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             model.addAttribute("errorMessage", "username đã tồn tại");
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Lỗi thêm user: " + e);
         }
         return null;
+    }
+
+    @GetMapping("/users")
+    public String list(Model model) {
+        model.addAttribute("active", "users");
+        return "table_user";
     }
 }
