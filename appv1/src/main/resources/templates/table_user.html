@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Người dùng</title>
+    <th:block th:replace="base :: resource"></th:block>
+    <th:block th:replace="fragments/table_sidebar :: resource"></th:block>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+    <div class="admin-wrapper">
+        <div th:replace="fragments/table_sidebar :: tableSidebar"></div>
+        <div class="main-content">
+            <h2>Danh sách người dùng</h2>
+             <p>Trang đang hoạt động!</p>
+            <!-- table user ở đây -->
+        </div>
+    </div>
+    <div th:replace="base :: footer"></div>
+</body>
+</html>

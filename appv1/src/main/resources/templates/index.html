@@ -1,15 +1,101 @@
+
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
--->
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
+
     <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
+        <title>Trang chủ Admin</title>
+    <th:block th:replace="base :: resource"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div th:replace="base :: header"></div>
+
+    <div class="container">
+        <h1 class="text-center">BÁO CÁO VÀ PHÂN TÍCH</h1>
+
+        <div class="row mb-4">
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card bg-info text-white shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="fw-bold text-uppercase mb-1">Tổng số người dùng</div>
+                                <div class="h4 fw-bold mb-0">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card bg-success text-white shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="fw-bold text-uppercase mb-1">Nhà cung cấp đang hoạt động</div>
+                                <div class="h4 fw-bold mb-0">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-building fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="card bg-warning text-white shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="fw-bold text-uppercase mb-1">Tổng giao dịch thành công</div>
+                                <div class="h4 fw-bold mb-0">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-money-bill-wave fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="text-center">THỐNG KÊ DỊCH VỤ</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Biểu đồ loại dịch vụ</h5>
+                        <canvas id="serviceTypeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Biểu đồ trạng thái dịch vụ</h5>
+                        <canvas id="serviceStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Biểu đồ số dịch vụ theo nhà cung cấp</h5>
+                        <canvas id="serviceByProviderChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="base :: footer"></div>
+</body>
+
 </html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
+-->
+
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+    <head>
+    <th:context th:fragment="resource">
+        <link rel="stylesheet" th:href="@{/css/table.css}"/>
+    </th:context>
+    </head>
+
+    <body>
+        <nav class="sidebar" th:fragment="tableSidebar">
+            <a th:href="@{/users}" th:class="${active == 'users'} ? 'active'">Người dùng</a>
+            <a th:href="@{/providers}" th:class="${active == 'providers'} ? 'active'">Nhà cung cấp</a>
+            <a th:href="@{/services}" th:class="${active == 'services'} ? 'active'">Dịch vụ</a>
+            <a th:href="@{/transactions}" th:class="${active == 'transactions'} ? 'active'">Giao dịch</a>
+        </nav>
+    </body>
+</html>
