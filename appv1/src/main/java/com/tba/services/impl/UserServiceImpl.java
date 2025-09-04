@@ -6,7 +6,7 @@ package com.tba.services.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.tba.dto.response.UserResponse;
+import com.tba.dto.response.UserResponseDTO;
 import com.tba.pojo.User;
 import com.tba.repositories.UserRepository;
 import com.tba.services.UserService;
@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -97,7 +98,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse addUser(Map<String, String> params, MultipartFile avatar) {
+    public UserResponseDTO addUser(Map<String, String> params, MultipartFile avatar) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -143,6 +144,11 @@ public class UserServiceImpl implements UserService {
         authorities.add(new SimpleGrantedAuthority(String.valueOf(u.getRole())));
         return new org.springframework.security.core.userdetails.User(
                 u.getUsername(), u.getPassword(), authorities);
+    }
+    
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.getAllUsers();
     }
 
 }

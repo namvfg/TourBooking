@@ -8,6 +8,7 @@ import com.tba.enums.UserRole;
 import com.tba.pojo.User;
 import com.tba.services.UserService;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -54,7 +55,12 @@ public class UserController {
 
     @GetMapping("/users")
     public String list(Model model) {
+        List<User> users = UserService.getAllUsers();
+        model.addAttribute("users", users);
         model.addAttribute("active", "users");
         return "table_user";
     }
+    
+    
+    
 }

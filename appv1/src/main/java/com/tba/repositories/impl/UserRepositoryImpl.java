@@ -10,6 +10,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import java.util.List;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -88,6 +89,17 @@ public class UserRepositoryImpl implements UserRepository {
         query.select(root.get("id")).where(cb.equal(root.get("username"), username));
         Query q = session.createQuery(query);
         return (Integer) q.getSingleResult();
+    }
+    
+    
+    @Override
+    public List<User> getAllUsers() {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<User> cq = cb.createQuery(User.class);
+        Root<User> root = cq.from(User.class);
+        cq.select(root);
+        return session.createQuery(cq).getResultList();
     }
 
 }

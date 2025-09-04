@@ -5,6 +5,7 @@
 package com.tba.repositories;
 
 import com.tba.pojo.User;
+import java.util.List;
 
 /**
  *
@@ -23,4 +24,6 @@ public interface UserRepository {
     boolean authenticate(String username, String password);
 
     int getUserIdByUsername(String username);
+    
+    List<User> getAllUsers();
 }
