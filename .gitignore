@@ -23,3 +23,30 @@
 hs_err_pid*
 replay_pid*
 /appv1/target/
+
+# Thư mục node_modules (bắt buộc phải ignore)
+node_modules/
+
+# Thư mục build (sinh ra khi build production)
+build/
+
+# File môi trường (chứa API key, secret, config)
+.env
+.env.local
+.env.development.local
+.env.production.local
+.env.test.local
+
+# Thư mục test coverage
+coverage/
+
+# File log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# File hệ thống & editor
+.DS_Store
+.vscode/
+.idea/

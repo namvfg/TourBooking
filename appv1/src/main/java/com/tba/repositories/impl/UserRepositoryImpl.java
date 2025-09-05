@@ -43,19 +43,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean existsByUsername(String username) {
-        Session session = this.factory.getObject().getCurrentSession();
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-        Root<User> root = cq.from(User.class);
-        cq.select(cb.count(root.get("id")));
-        cq.where(cb.equal(root.get("username"), username));
-        Long count = session.createQuery(cq).getSingleResult();
-        return count > 0;
-    }
-
-    @Override
-    public User addUser(User u) {
+    public boolean addUser(User u) {
         Session s = this.factory.getObject().getCurrentSession();
         if (u.getId() != null) {
             throw new IllegalArgumentException("ID must not be set manually when using GenerationType.IDENTITY");
@@ -63,7 +51,7 @@ public class UserRepositoryImpl implements UserRepository {
             System.out.println("has ID");
         }
         s.persist(u);
-        return u;
+        return true;
     }
 
     @Override
@@ -109,6 +97,42 @@ public class UserRepositoryImpl implements UserRepository {
         Root<User> root = cq.from(User.class);
         cq.select(root);
         return session.createQuery(cq).getResultList();
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<User> root = cq.from(User.class);
+        cq.select(cb.count(root.get("id")));
+        cq.where(cb.equal(root.get("username"), username));
+        Long count = session.createQuery(cq).getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<User> root = cq.from(User.class);
+        cq.select(cb.count(root.get("id")));
+        cq.where(cb.equal(root.get("email"), email));
+        Long count = session.createQuery(cq).getSingleResult();
+        return count > 0;
+    }
+
+    @Override
+    public boolean existsByPhoneNumber(String phoneNumber) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<User> root = cq.from(User.class);
+        cq.select(cb.count(root.get("id")));
+        cq.where(cb.equal(root.get("phoneNumber"), phoneNumber));
+        Long count = session.createQuery(cq).getSingleResult();
+        return count > 0;
     }
 
 }

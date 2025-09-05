@@ -17,7 +17,7 @@ public interface UserRepository {
 
     boolean existsByUsername(String username);
 
-    User addUser(User u);
+    boolean addUser(User user);
 
     void addUserWithFormBinding(User user);
 
@@ -28,4 +28,8 @@ public interface UserRepository {
     List<User> getAllUsers();
     
     void deleteUser(Integer id);
+    
+    boolean existsByEmail(String email);
+    
+    boolean existsByPhoneNumber(String phoneNumber);
 }

@@ -82,6 +82,7 @@ public class SpringSecurityConfigs {
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 // 5. Các API bảo mật bằng JWT (JWTFilter sẽ xử lý JWT, sau đó Spring Security kiểm tra role)
                 .requestMatchers("/api/secure/*").authenticated()
+                .requestMatchers("/api/secure/profile").permitAll()
                 // 6. Mọi request khác còn lại đều phải xác thực (deny by default)
                 .anyRequest().authenticated()
                 ).formLogin(form -> form
@@ -115,14 +116,14 @@ public class SpringSecurityConfigs {
         return source;
     }
 
-    @Bean
-    public Cloudinary cloudinary() {
-        Cloudinary cloudinary
-                = new Cloudinary(ObjectUtils.asMap(
-                        "cloud_name", "dcee16rsp",
-                        "api_key", "645857166697866",
-                        "api_secret", "QpsoRSYSM8S4rzFOS51f3615UmQ",
-                        "secure", true));
-        return cloudinary;
-    }
+//    @Bean
+//    public Cloudinary cloudinary() {
+//        Cloudinary cloudinary
+//                = new Cloudinary(ObjectUtils.asMap(
+//                        "cloud_name", "dcee16rsp",
+//                        "api_key", "645857166697866",
+//                        "api_secret", "QpsoRSYSM8S4rzFOS51f3615UmQ",
+//                        "secure", true));
+//        return cloudinary;
+//    }
 }
