@@ -45,61 +45,15 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private Cloudinary cloudinary;
 
-    private static final Pattern PHONE_PATTERN = Pattern.compile("^\\d{10}$");
-    private static final Pattern DATE_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
-
-    private void validateParams(Map<String, String> params) {
-        // Validate username
-        String username = params.get("username");
-        if (username == null || username.trim().isEmpty()) {
-            throw new ValidationException("Username cannot be empty");
-        }
-        if (username.length() < 3 || username.length() > 20) {
-            throw new ValidationException("Username must be between 3 and 20 characters");
-        }
-
-        // Validate password
-        String password = params.get("password");
-        if (password == null || password.trim().isEmpty()) {
-            throw new ValidationException("Password cannot be empty");
-        }
-        if (password.length() < 6) {
-            throw new ValidationException("Password must be at least 6 characters");
-        }
-
-        // Validate fullname
-        String fullname = params.get("fullname");
-        if (fullname == null || fullname.trim().isEmpty()) {
-            throw new ValidationException("Fullname cannot be empty");
-        }
-
-        // Validate email
-        String email = params.get("email");
-        if (email == null || email.trim().isEmpty()) {
-            throw new ValidationException("Email cannot be empty");
-        }
-        if (!Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$").matcher(email).matches()) {
-            throw new ValidationException("Email must be valid");
-        }
-
-        // Validate phone number
-        String phoneNumber = params.get("phoneNumber");
-        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
-            throw new ValidationException("Phone number cannot be empty");
-        }
-        if (!PHONE_PATTERN.matcher(phoneNumber).matches()) {
-            throw new ValidationException("Phone number must be 10 digits");
-        }
-    }
-
     @Override
     public User getUserByUsername(String username) {
         return this.userRepository.getUserByUsername(username);
     }
 
     @Override
-    public UserResponseDTO addUser(Map<String, String> params, MultipartFile avatar) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean addUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return this.userRepository.addUser(user);
     }
 
     @Override
@@ -154,5 +108,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Integer id) {
         userRepository.deleteUser(id);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return this.userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return this.userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByPhoneNumber(String phoneNumber) {
+        return this.userRepository.existsByPhoneNumber(phoneNumber);
     }
 }

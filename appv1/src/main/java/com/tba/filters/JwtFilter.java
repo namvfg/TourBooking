@@ -50,14 +50,7 @@ public class JwtFilter implements Filter {
                 "/logout",
                 "/access-denied"
         );
-//        for (String path : noAuthRequiredPaths) {
-//            String fullPath = contextPath + path;
-//            System.out.println("path: " + fullPath);
-//            if (requestURI.equals(fullPath) || (path.endsWith("/") && requestURI.startsWith(fullPath))) {
-//                chain.doFilter(request, response);
-//                return; // Bỏ qua JWT filter
-//            }
-//        }
+
         if (requestURI.equals(contextPath + "/api/login") || requestURI.equals(contextPath + "/api/register")
                 || !requestURI.startsWith(contextPath + "/api/secure/") // Nếu không phải API secure
                 ) {

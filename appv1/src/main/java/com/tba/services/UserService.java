@@ -19,15 +19,22 @@ public interface UserService extends UserDetailsService {
 
     User getUserByUsername(String username);
 
-    UserResponseDTO addUser(Map<String, String> params, MultipartFile avatar);
+    boolean addUser(User user);
 
     void addUserWithFormBinding(User user);
 
     boolean authenticate(String username, String password);
 
     int getUserIdByUsername(String username);
-    
+
     List<User> getAllUsers();
-    
+
     void deleteUser(Integer id);
+
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByPhoneNumber(String phoneNumber);
+
 }
