@@ -13,4 +13,6 @@ import java.util.List;
 
 public interface ServicePostService {
     List<ServicePost> getAllServicePosts();
+    
+    void softDeleteServicePost(Integer id);
 }

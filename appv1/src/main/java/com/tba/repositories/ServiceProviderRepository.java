@@ -13,4 +13,6 @@ import java.util.List;
  */
 public interface ServiceProviderRepository {
     List<ServiceProvider> getAllServiceProviders();
+    
+    void deleteProvider(Integer id);
 }

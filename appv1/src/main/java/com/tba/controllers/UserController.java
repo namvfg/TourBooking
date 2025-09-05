@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 /**
@@ -60,7 +61,11 @@ public class UserController {
         model.addAttribute("active", "users");
         return "table_user";
     }
-    
-    
-    
+
+    @GetMapping("/user/delete/{id}")
+    public String deleteUser(@PathVariable("id") Integer id) {
+        UserService.deleteUser(id);
+        return "redirect:/users";
+    }
+
 }

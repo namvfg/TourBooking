@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public class TransactionRepositoryImpl implements TransactionRepository {
+
     @Autowired
     private LocalSessionFactoryBean factory;
 
@@ -34,5 +35,15 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         Root<Transaction> root = cq.from(Transaction.class);
         cq.select(root);
         return session.createQuery(cq).getResultList();
+    }
+
+    @Override
+    @Transactional
+    public void deleteTransaction(Integer id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        Transaction transaction = session.get(Transaction.class, id);
+        if (transaction != null) {
+            session.delete(transaction);
+        }
     }
 }

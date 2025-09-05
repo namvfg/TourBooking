@@ -17,11 +17,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ServiceProviderServiceImpl implements ServiceProviderService {
+
     @Autowired
     private ServiceProviderRepository serviceProviderRepository;
 
     @Override
     public List<ServiceProvider> getAllServiceProviders() {
         return serviceProviderRepository.getAllServiceProviders();
+    }
+
+    @Override
+    public void deleteProvider(Integer id) {
+        serviceProviderRepository.deleteProvider(id);
     }
 }

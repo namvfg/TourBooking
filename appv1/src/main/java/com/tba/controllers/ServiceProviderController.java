@@ -22,9 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class ServiceProviderController {
+
     @Autowired
     private ServiceProviderService serviceProviderService;
 
@@ -33,5 +35,11 @@ public class ServiceProviderController {
         List<ServiceProvider> providers = serviceProviderService.getAllServiceProviders();
         model.addAttribute("providers", providers);
         return "table_provider";
+    }
+
+    @GetMapping("/provider/delete/{id}")
+    public String deleteProvider(@PathVariable("id") Integer id) {
+        serviceProviderService.deleteProvider(id);
+        return "redirect:/providers";
     }
 }

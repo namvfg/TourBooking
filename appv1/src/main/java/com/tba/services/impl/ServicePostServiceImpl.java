@@ -17,11 +17,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ServicePostServiceImpl implements ServicePostService {
+
     @Autowired
     private ServicePostRepository servicePostRepository;
 
     @Override
     public List<ServicePost> getAllServicePosts() {
         return servicePostRepository.getAllServicePosts();
+    }
+
+    @Override
+    public void softDeleteServicePost(Integer id) {
+        servicePostRepository.softDeleteServicePost(id);
     }
 }
