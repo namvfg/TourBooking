@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * @author Admin
  */
-public class UserResponse {
+public class UserResponseDTO {
     private Integer id;
     private String firstName;
     private String lastName;
@@ -24,10 +24,10 @@ public class UserResponse {
     private Date createdAt;
     private Date updatedAt;
 
-    public UserResponse() {
+    public UserResponseDTO() {
     }
 
-    public UserResponse(Integer id, String firstName, String lastName, String email, String password, String avatar, UserRole role, String address, String phoneNumber, Date createdAt, Date updatedAt) {
+    public UserResponseDTO(Integer id, String firstName, String lastName, String email, String password, String avatar, UserRole role, String address, String phoneNumber, Date createdAt, Date updatedAt) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;

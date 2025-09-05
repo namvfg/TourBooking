@@ -4,8 +4,9 @@
  */
 package com.tba.services;
 
-import com.tba.dto.response.UserResponse;
+import com.tba.dto.response.UserResponseDTO;
 import com.tba.pojo.User;
+import java.util.List;
 import java.util.Map;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,11 +19,13 @@ public interface UserService extends UserDetailsService {
 
     User getUserByUsername(String username);
 
-    UserResponse addUser(Map<String, String> params, MultipartFile avatar);
+    UserResponseDTO addUser(Map<String, String> params, MultipartFile avatar);
 
     void addUserWithFormBinding(User user);
 
     boolean authenticate(String username, String password);
 
     int getUserIdByUsername(String username);
+    
+    List<User> getAllUsers();
 }

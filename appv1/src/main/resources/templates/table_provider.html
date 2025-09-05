@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Nhà cung cấp</title>
+        <th:block th:replace="base :: resource"></th:block>
+        <th:block th:replace="fragments/table_sidebar :: resource"></th:block>
+    </head>
+    <body>
+        <div th:replace="base :: header"></div>
+        <div class="admin-wrapper">
+            <div th:replace="fragments/table_sidebar :: tableSidebar"></div>
+            <div class="main-content">
+                <h2>Danh sách nhà cung cấp</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Mã (ID)</th>
+                                <th>Tên công ty</th>
+                                <th>Người dùng</th>
+                                <th>Duyệt?</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày tạo</th>
+                                <th>Ngày cập nhật</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="provider, iStat : ${providers}">
+                                <td th:text="${iStat.index + 1}"></td>
+                                <td th:text="${provider.id}"></td>
+                                <td th:text="${provider.companyName}"></td>
+                                <td th:text="${provider.userId.username}"></td>
+                                <td>
+                                    <span th:text="${provider.isApproved ? 'Đã duyệt' : 'Chưa duyệt'}"
+                                          th:classappend="${provider.isApproved ? 'text-success' : 'text-danger'}"></span>
+                                </td>
+                                <td th:text="${provider.state}"></td>
+                                <td th:text="${#dates.format(provider.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td th:text="${#dates.format(provider.updatedAt, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td>
+                                    <a th:href="@{'/provider/update/' + ${provider.id}}" class="btn btn-warning btn-sm" title="Cập nhật">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a th:href="@{'/provider/delete/' + ${provider.id}}" class="btn btn-danger btn-sm"
+                                       title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa nhà cung cấp này không?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div th:replace="base :: footer"></div>
+    </body>
+</html>
