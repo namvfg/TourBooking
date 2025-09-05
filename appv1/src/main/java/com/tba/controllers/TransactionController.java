@@ -15,9 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class TransactionController {
+
     @Autowired
     private TransactionService transactionService;
 
@@ -26,5 +28,11 @@ public class TransactionController {
         List<Transaction> transactions = transactionService.getAllTransactions();
         model.addAttribute("transactions", transactions);
         return "table_transaction";
+    }
+
+    @GetMapping("/transaction/delete/{id}")
+    public String deleteTransaction(@PathVariable("id") Integer id) {
+        transactionService.deleteTransaction(id);
+        return "redirect:/transactions";
     }
 }

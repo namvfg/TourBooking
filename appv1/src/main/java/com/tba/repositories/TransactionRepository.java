@@ -13,4 +13,6 @@ import java.util.List;
 
 public interface TransactionRepository {
     List<Transaction> getAllTransactions();
+    
+    void deleteTransaction(Integer id);
 }

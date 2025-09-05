@@ -90,8 +90,17 @@ public class UserRepositoryImpl implements UserRepository {
         Query q = session.createQuery(query);
         return (Integer) q.getSingleResult();
     }
-    
-    
+
+    @Override
+    @Transactional
+    public void deleteUser(Integer id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        User user = session.get(User.class, id);
+        if (user != null) {
+            session.delete(user);
+        }
+    }
+
     @Override
     public List<User> getAllUsers() {
         Session session = this.factory.getObject().getCurrentSession();

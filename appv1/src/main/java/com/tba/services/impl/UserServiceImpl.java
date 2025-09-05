@@ -145,10 +145,14 @@ public class UserServiceImpl implements UserService {
         return new org.springframework.security.core.userdetails.User(
                 u.getUsername(), u.getPassword(), authorities);
     }
-    
+
     @Override
     public List<User> getAllUsers() {
         return userRepository.getAllUsers();
     }
 
+    @Override
+    public void deleteUser(Integer id) {
+        userRepository.deleteUser(id);
+    }
 }

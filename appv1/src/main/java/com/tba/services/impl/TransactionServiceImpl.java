@@ -17,11 +17,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
+
     @Autowired
     private TransactionRepository transactionRepository;
 
     @Override
     public List<Transaction> getAllTransactions() {
         return transactionRepository.getAllTransactions();
+    }
+
+    @Override
+    public void deleteTransaction(Integer id) {
+        transactionRepository.deleteTransaction(id);
     }
 }

@@ -19,9 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
 @Repository
 @Transactional
 public class ServiceProviderRepositoryImpl implements ServiceProviderRepository {
+
     @Autowired
     private LocalSessionFactoryBean factory;
 
@@ -33,5 +35,15 @@ public class ServiceProviderRepositoryImpl implements ServiceProviderRepository 
         Root<ServiceProvider> root = cq.from(ServiceProvider.class);
         cq.select(root);
         return session.createQuery(cq).getResultList();
+    }
+
+    @Override
+    @Transactional
+    public void deleteProvider(Integer id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        ServiceProvider provider = session.get(ServiceProvider.class, id);
+        if (provider != null) {
+            session.delete(provider);
+        }
     }
 }

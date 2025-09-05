@@ -28,4 +28,6 @@ public interface UserService extends UserDetailsService {
     int getUserIdByUsername(String username);
     
     List<User> getAllUsers();
+    
+    void deleteUser(Integer id);
 }

@@ -12,4 +12,6 @@ import com.tba.pojo.ServiceProvider;
 import java.util.List;
 public interface ServiceProviderService {
     List<ServiceProvider> getAllServiceProviders();
+    
+    void deleteProvider(Integer id);
 }
