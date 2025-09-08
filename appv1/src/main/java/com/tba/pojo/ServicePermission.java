@@ -4,6 +4,7 @@
  */
 package com.tba.pojo;
 
+import com.tba.enums.ServiceType;
 import com.tba.enums.State;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -48,9 +49,9 @@ public class ServicePermission implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 32)
+    @Enumerated(EnumType.STRING)
     @Column(name = "service_type")
-    private String serviceType;
+    private ServiceType serviceType;
     @Basic(optional = false)
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -77,7 +78,7 @@ public class ServicePermission implements Serializable {
         this.id = id;
     }
 
-    public ServicePermission(Integer id, String serviceType, State state, Date createdDate, Date updatedDate) {
+    public ServicePermission(Integer id, ServiceType serviceType, State state, Date createdDate, Date updatedDate) {
         this.id = id;
         this.serviceType = serviceType;
         this.state = state;
@@ -93,11 +94,11 @@ public class ServicePermission implements Serializable {
         this.id = id;
     }
 
-    public String getServiceType() {
+    public ServiceType getServiceType() {
         return serviceType;
     }
 
-    public void setServiceType(String serviceType) {
+    public void setServiceType(ServiceType serviceType) {
         this.serviceType = serviceType;
     }
 
