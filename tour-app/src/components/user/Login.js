@@ -3,21 +3,19 @@ import { useContext, useState } from "react";
 import cookie from "react-cookies";
 import { Link, useNavigate } from "react-router-dom";
 import MySpinner from "../layout/MySpinner";
-import MyAlert from "../layout/MyAlert";
 import Apis, { authApis, endpoints } from "../configs/Apis";
 import { MyUserContext } from "../configs/Context";
+import { toast } from "react-toastify";
 
 const Login = () => {
     const [username, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [, dispatch] = useContext(MyUserContext);
-    const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError("");
         setLoading(true);
 
         try {
@@ -25,16 +23,19 @@ const Login = () => {
             const { token, error } = res.data || {};
 
             if (!token) {
-                setError(error || "Đăng nhập thất bại!");
+                toast.error(error || "Đăng nhập thất bại!");
                 return;
             }
+
             cookie.save("token", token, { path: "/" });
             const profileRes = await authApis(token).get(endpoints["profile"]);
             dispatch({ type: "login", payload: profileRes.data });
+
+            toast.success("🎉 Đăng nhập thành công!");
             navigate("/");
         } catch (err) {
             console.error(err);
-            setError("Lỗi hệ thống hoặc sai tài khoản/mật khẩu!");
+            toast.error("Lỗi hệ thống hoặc sai tài khoản/mật khẩu!");
         } finally {
             setLoading(false);
         }
@@ -43,7 +44,10 @@ const Login = () => {
     if (loading) return <MySpinner />;
 
     return (
-        <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: "70vh" }}>
+        <Container
+            className="d-flex justify-content-center align-items-center"
+            style={{ minHeight: "70vh" }}
+        >
             <Card style={{ width: "100%", maxWidth: "400px" }} className="p-4 shadow">
                 <h3 className="mb-4 text-center">Đăng nhập</h3>
                 <Form onSubmit={handleSubmit}>
@@ -72,8 +76,6 @@ const Login = () => {
                     <Button type="submit" variant="primary" className="w-100">
                         Đăng nhập
                     </Button>
-
-                    <MyAlert message={error} onClose={() => setError("")} />
                 </Form>
 
                 <div className="mt-3 text-center">

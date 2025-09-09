@@ -85,7 +85,7 @@ DROP TABLE IF EXISTS `service_permission`;
 CREATE TABLE `service_permission` (
   `id` int NOT NULL AUTO_INCREMENT,
   `service_provider_id` int NOT NULL,
-  `service_type` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `service_type` enum('TRANSPORTATION','TOUR','ROOM') COLLATE utf8mb4_unicode_ci NOT NULL,
   `state` enum('PENDING','ACTIVE','DISABLED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'PENDING',
   `created_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -157,7 +157,7 @@ CREATE TABLE `service_provider` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`),
   CONSTRAINT `service_provider_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,6 +166,7 @@ CREATE TABLE `service_provider` (
 
 LOCK TABLES `service_provider` WRITE;
 /*!40000 ALTER TABLE `service_provider` DISABLE KEYS */;
+INSERT INTO `service_provider` VALUES (1,7,'Duc Business',0,'PENDING','2025-09-09 15:06:18','2025-09-09 15:06:18');
 /*!40000 ALTER TABLE `service_provider` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -277,7 +278,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -286,7 +287,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Nguyen','Nam','dunnguyen190404@gmail.com','admin','$2a$10$l5/qWhn.jGcFiIxu5Qz4eubKnfPJLammLAYBv996cUXS1.AvuzumC','https://res.cloudinary.com/dcee16rsp/image/upload/v1755430567/Ielts_wrpwd7.jpg','ADMIN','HCM',NULL,'2025-08-31 20:21:21','2025-08-31 20:21:21');
+INSERT INTO `user` VALUES (1,'Nguyen','Nam','dunnguyen190404@gmail.com','admin','$2a$10$l5/qWhn.jGcFiIxu5Qz4eubKnfPJLammLAYBv996cUXS1.AvuzumC','https://res.cloudinary.com/dcee16rsp/image/upload/v1755430567/Ielts_wrpwd7.jpg','ADMIN','HCM',NULL,'2025-08-31 20:21:21','2025-08-31 20:21:21'),(5,'Nguyễn','Nam','duakhongchau21234@gmail.com','user1','$2a$10$IslgVMhT235173KVawXEkOjqm7zg.Vo8Gz7ED6LD3qDThTl.rK6Ve','https://res.cloudinary.com/dcee16rsp/image/upload/v1757093889/avatar/file_y716ou.png','USER','Lê Văn Lương, Nhà Bè',NULL,'2025-09-06 00:38:08','2025-09-06 00:38:08'),(7,'Lê','Đức','ducbusiness@gmail.com','provider','$2a$10$qpRamciq/9Hyg214nM0yM.tYWakexKJgVTLnU7teZm434Vuu2T7X2','https://res.cloudinary.com/dcee16rsp/image/upload/v1757405178/avatar/file_uwhpd1.jpg','PROVIDER','Lê Văn Lương, Nhà Bè','0351123453','2025-09-09 15:06:18','2025-09-09 15:06:18');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -299,4 +300,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-09-03 16:01:01
+-- Dump completed on 2025-09-09 15:18:46

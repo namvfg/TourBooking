@@ -17,7 +17,7 @@ public interface UserRepository {
 
     boolean existsByUsername(String username);
 
-    boolean addUser(User user);
+    void addUser(User user);
 
     void addUserWithFormBinding(User user);
 

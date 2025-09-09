@@ -74,15 +74,15 @@ public class SpringSecurityConfigs {
                 .requestMatchers("/resources/**").permitAll()
                 .requestMatchers("/static/**").permitAll()
                 .requestMatchers("/login", "/logout", "/access-denied").permitAll()
-                .requestMatchers("/api/login", "/api/register", "api/users").permitAll() // Các API login/register
+                .requestMatchers("/api/login", "/api/register", "/api/users", "/api/provider/register").permitAll() // Các API login/register
                 .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll() // Các API product công khai
 
                 // 4. Các đường dẫn web admin, yêu cầu xác thực bằng session (form login)
                 .requestMatchers("/", "/home").hasAuthority("ADMIN")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 // 5. Các API bảo mật bằng JWT (JWTFilter sẽ xử lý JWT, sau đó Spring Security kiểm tra role)
-                .requestMatchers("/api/secure/*").authenticated()
-                .requestMatchers("/api/secure/profile").permitAll()
+                .requestMatchers("/api/secure/**").authenticated()
+                .requestMatchers("/api/secure/profile").authenticated()
                 // 6. Mọi request khác còn lại đều phải xác thực (deny by default)
                 .anyRequest().authenticated()
                 ).formLogin(form -> form
