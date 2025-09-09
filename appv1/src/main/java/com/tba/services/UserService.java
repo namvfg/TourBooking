@@ -19,7 +19,7 @@ public interface UserService extends UserDetailsService {
 
     User getUserByUsername(String username);
 
-    boolean addUser(User user);
+    void addUser(User user);
 
     void addUserWithFormBinding(User user);
 

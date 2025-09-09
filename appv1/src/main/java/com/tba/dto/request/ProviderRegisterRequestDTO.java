@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author Admin
  */
-public class UserRegisterRequestDTO {
+public class ProviderRegisterRequestDTO {
 
     @NotBlank(message = "Họ không được để trống")
     private String firstName;
@@ -45,21 +45,42 @@ public class UserRegisterRequestDTO {
             message = "Số điện thoại không hợp lệ (phải có 10 chữ số)"
     )
     private String phoneNumber;
-    
+
     private MultipartFile avatar;
-    
-    public UserRegisterRequestDTO() {
+
+    @NotBlank(message = "Tên công ty không được để trống")
+    @Size(min = 2, max = 20, message = "Tên công ty phải từ 2 đến 20 ký tự")
+    private String companyName;
+
+    public ProviderRegisterRequestDTO() {
     }
 
-    public UserRegisterRequestDTO(String firstName, String lastName, String email, String username, String password, MultipartFile avatar, String address, String phoneNumber) {
+    public ProviderRegisterRequestDTO(String firstName, String lastName, String email, String username, String password, String address, String phoneNumber, MultipartFile avatar, String companyName) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.username = username;
         this.password = password;
-        this.avatar = avatar;
         this.address = address;
         this.phoneNumber = phoneNumber;
+        this.avatar = avatar;
+        this.companyName = companyName;
+    }
+
+    
+
+    /**
+     * @return the companyName
+     */
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    /**
+     * @param companyName the companyName to set
+     */
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
     /**
@@ -133,20 +154,6 @@ public class UserRegisterRequestDTO {
     }
 
     /**
-     * @return the avatar
-     */
-    public MultipartFile getAvatar() {
-        return avatar;
-    }
-
-    /**
-     * @param avatar the avatar to set
-     */
-    public void setAvatar(MultipartFile avatar) {
-        this.avatar = avatar;
-    }
-
-    /**
      * @return the address
      */
     public String getAddress() {
@@ -172,6 +179,20 @@ public class UserRegisterRequestDTO {
      */
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    /**
+     * @return the avatar
+     */
+    public MultipartFile getAvatar() {
+        return avatar;
+    }
+
+    /**
+     * @param avatar the avatar to set
+     */
+    public void setAvatar(MultipartFile avatar) {
+        this.avatar = avatar;
     }
 
 }

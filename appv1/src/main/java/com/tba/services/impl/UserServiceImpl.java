@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,13 +26,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Admin
  */
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -51,9 +51,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean addUser(User user) {
+    public void addUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return this.userRepository.addUser(user);
+        this.userRepository.addUser(user);
     }
 
     @Override

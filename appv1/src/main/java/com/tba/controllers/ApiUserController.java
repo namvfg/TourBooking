@@ -12,13 +12,12 @@ import com.tba.pojo.User;
 import com.tba.services.CloudinaryService;
 import com.tba.services.UserService;
 import com.tba.utils.JwtUtils;
-import jakarta.validation.ValidationException;
+import jakarta.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -36,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
-@PropertySource("classpath:configs.properties")
 public class ApiUserController {
 
     @Autowired
@@ -70,48 +67,8 @@ public class ApiUserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@ModelAttribute UserRegisterRequestDTO dto) {
+    public ResponseEntity<?> register(@Valid @ModelAttribute UserRegisterRequestDTO dto) {
         try {
-            String phonePattern = this.env.getProperty("PHONE_PATTERN");
-            String emailPattern = this.env.getProperty("EMAIL_PATTERN");
-            String passwordPattern = this.env.getProperty("PASSWORD_PATTERN");
-
-            if (dto.getFirstName().isBlank()
-                    || dto.getLastName().isBlank() || dto.getEmail().isBlank()
-                    || dto.getAddress().isBlank() || dto.getPassword().isBlank()) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Thông tin không hợp lệ"));
-            }
-
-            if (userService.existsByEmail(dto.getEmail())) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of("error", "Email đã tồn tại"));
-            }
-
-            if (userService.existsByPhoneNumber(dto.getPhoneNumber())) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of("error", "Số điện thoại đã tồn tại"));
-            }
-
-            if (userService.existsByUsername(dto.getUsername())) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of("error", "Username đã tồn tại"));
-            }
-
-            if (dto.getUsername().length() < 3 || dto.getUsername().length() > 20) {
-                throw new ValidationException("Username phải dài từ 3 đến 20 ký tự");
-            }
-
-            if (!dto.getEmail().matches(emailPattern)) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Email không hợp lệ"));
-            }
-
-            if (!dto.getPhoneNumber().matches(phonePattern)) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Số điện thoại không hợp lệ"));
-            }
-
-            if (!dto.getPassword().matches(passwordPattern)) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Mật khẩu phải từ 6 ký tự và chứa cả chữ lẫn số"));
-            }
 
             String imageUrl;
             try {
@@ -133,19 +90,19 @@ public class ApiUserController {
             user.setCreatedAt(new Date());
             user.setUpdatedAt(new Date());
 
-            boolean success = userService.addUser(user);
+            this.userService.addUser(user);
 
-            if (success) {
-                return ResponseEntity.ok(Map.of("message", "Đăng ký thành công " + dto.getFirstName() + " " + dto.getLastName()));
-            } else {
-                return ResponseEntity.internalServerError().body(Map.of("error", "Lỗi trong quá trình lưu người dùng"));
-            }
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "id", user.getId(), 
+                    "message", "Đăng ký người dùng thành công!"
+            ));
+
         } catch (Exception ex) {
             ex.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body(Map.of("error", "Lỗi hệ thống: " + ex.getMessage()));
         }
-
     }
 
     @GetMapping("/secure/profile")
@@ -158,7 +115,7 @@ public class ApiUserController {
                 u.getLastName(),
                 u.getEmail(),
                 u.getUsername(),
-                u.getAvatar(), 
+                u.getAvatar(),
                 u.getRole(),
                 u.getAddress(),
                 u.getPhoneNumber(),

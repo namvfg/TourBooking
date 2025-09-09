@@ -6,13 +6,15 @@ import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import { MyUserContext } from './components/configs/Context';
 import { useEffect } from 'react';
-import authApis, { endpoints } from './components/configs/Apis';
+import { authApis, endpoints } from './components/configs/Apis';
 import Home from './components/Home';
 import { useReducer } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import MyUserReducer from './components/reducers/MyUserReducer';
 import Login from './components/user/Login';
 import Register from './components/user/Register';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
 
@@ -51,14 +53,25 @@ const App = () => {
           <main style={{ flex: 1 }}>
             <Container className="py-4">
               <Routes>
-                <Route path="/" element={<Home/>} />
-                <Route path="/login" element={<Login/>} />
-                <Route path="/register" element={<Register/>} />
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
               </Routes>
             </Container>
           </main>
 
           <Footer />
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            newestOnTop={true}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
         </div >
       </BrowserRouter>
 

@@ -42,7 +42,13 @@ const Header = () => {
                             {user ? (
                                 <>
                                     <Nav.Link as={Link} to="/profile" className="btn btn-outline-primary me-2">Thông tin cá nhân</Nav.Link>
-                                    <Nav.Link as={Link} onClick={() => dispatch({ type: "logout" })} className="btn btn-outline-danger">Đăng xuất</Nav.Link>
+                                    <Nav.Link as={Link}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            dispatch({ type: "logout" });
+                                            navigate("/login");
+                                        }}
+                                        className="btn btn-outline-danger">Đăng xuất</Nav.Link>
                                 </>
                             ) : (
                                 <>

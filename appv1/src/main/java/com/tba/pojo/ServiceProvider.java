@@ -74,7 +74,7 @@ public class ServiceProvider implements Serializable {
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "serviceProviderId")
+    @OneToMany(mappedBy = "serviceProviderId")
     private Set<ProviderRating> providerRatingSet;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @OneToOne(optional = false)

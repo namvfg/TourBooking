@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Admin
  */
 @Repository
-@Transactional
 public class UserRepositoryImpl implements UserRepository {
 
     @Autowired
@@ -43,22 +42,19 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean addUser(User u) {
+    public void addUser(User u) {
         Session s = this.factory.getObject().getCurrentSession();
         if (u.getId() != null) {
             throw new IllegalArgumentException("ID must not be set manually when using GenerationType.IDENTITY");
-        } else {
-            System.out.println("has ID");
         }
         s.persist(u);
-        return true;
     }
 
     @Override
     public void addUserWithFormBinding(User user) {
         Session s = this.factory.getObject().getCurrentSession();
         if (user.getId() == null) {
-            s.persist(user);
+            s.save(user);
         }
     }
 
