@@ -47,7 +47,6 @@ public class ServiceProviderRepositoryImpl implements ServiceProviderRepository 
     }
 
     @Override
-
     public ServiceProvider getServiceProviderByUserId(int userId) {
         Session session = this.factory.getObject().getCurrentSession();
         CriteriaBuilder b = session.getCriteriaBuilder();
@@ -56,21 +55,21 @@ public class ServiceProviderRepositoryImpl implements ServiceProviderRepository 
         q.select(root);
         q.where(b.equal(root.get("userId").get("id"), userId));
         return session.createQuery(q).uniqueResult();
+    }
 
+    @Override
     public void addProvider(ServiceProvider p) {
         Session s = this.factory.getObject().getCurrentSession();
         if (p.getId() != null) {
             throw new IllegalArgumentException("ID must not be set manually when using GenerationType.IDENTITY");
         }
         s.persist(p);
-        s.flush();
     }
 
     @Override
-    @Transactional
     public void updateProvider(ServiceProvider provider) {
         Session session = this.factory.getObject().getCurrentSession();
-        session.update(provider);
+        session.merge(provider);
     }
 
     @Override

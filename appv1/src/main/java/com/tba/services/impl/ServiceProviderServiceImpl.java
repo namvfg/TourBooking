@@ -40,10 +40,11 @@ public class ServiceProviderServiceImpl implements ServiceProviderService {
     }
 
     @Override
-
     public ServiceProvider getServiceProviderByUserId(int userId) {
         return this.serviceProviderRepository.getServiceProviderByUserId(userId);
     }
+
+    @Override
     public void addProvider(User u, ServiceProvider p) {
         this.userService.addUser(u);
         this.serviceProviderRepository.addProvider(p);

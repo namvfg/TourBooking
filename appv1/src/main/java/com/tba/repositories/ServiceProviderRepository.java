@@ -20,7 +20,7 @@ public interface ServiceProviderRepository {
     
     ServiceProvider getServiceProviderByUserId(int userId);
 
-    public void addProvider(ServiceProvider u);
+    void addProvider(ServiceProvider u);
 
     void updateProvider(ServiceProvider provider);
 

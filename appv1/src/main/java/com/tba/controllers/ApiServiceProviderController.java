@@ -15,7 +15,6 @@ import com.tba.pojo.ServiceProvider;
 import com.tba.pojo.User;
 import com.tba.services.CloudinaryService;
 import com.tba.services.EmailService;
-import com.tba.services.ProviderService;
 import com.tba.services.ServicePermissionService;
 import com.tba.services.ServiceProviderService;
 import com.tba.services.UserService;
@@ -46,7 +45,7 @@ public class ApiServiceProviderController {
     private CloudinaryService cloudinaryService;
 
     @Autowired
-    private ProviderService providerService;
+    private ServiceProviderService providerService;
 
     @Autowired
     private UserService userService;
