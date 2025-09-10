@@ -10,13 +10,12 @@ import com.tba.enums.UserRole;
 import com.tba.pojo.ServiceProvider;
 import com.tba.pojo.User;
 import com.tba.services.CloudinaryService;
-import com.tba.services.ProviderService;
+import com.tba.services.ServiceProviderService;
 import jakarta.validation.Valid;
 import java.util.Date;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +33,7 @@ public class ApiProviderController {
     private CloudinaryService cloudinaryService;
 
     @Autowired
-    private ProviderService providerService;
+    private ServiceProviderService providerService;
 
     @PostMapping("/provider/register")
     public ResponseEntity<?> registerProvider(@Valid @ModelAttribute ProviderRegisterRequestDTO dto) {

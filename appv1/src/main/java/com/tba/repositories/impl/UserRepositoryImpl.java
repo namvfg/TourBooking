@@ -131,4 +131,10 @@ public class UserRepositoryImpl implements UserRepository {
         return count > 0;
     }
 
+    @Override
+    public User getUserById(Integer id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        return session.get(User.class, id);
+    }
+
 }

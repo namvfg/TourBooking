@@ -45,4 +45,27 @@ public class ServiceProviderRepositoryImpl implements ServiceProviderRepository 
             session.delete(provider);
         }
     }
+
+    @Override
+    public void addProvider(ServiceProvider p) {
+        Session s = this.factory.getObject().getCurrentSession();
+        if (p.getId() != null) {
+            throw new IllegalArgumentException("ID must not be set manually when using GenerationType.IDENTITY");
+        }
+        s.persist(p);
+        s.flush();
+    }
+
+    @Override
+    @Transactional
+    public void updateProvider(ServiceProvider provider) {
+        Session session = this.factory.getObject().getCurrentSession();
+        session.update(provider);
+    }
+
+    @Override
+    public ServiceProvider getProviderById(Integer id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        return session.get(ServiceProvider.class, id);
+    }
 }

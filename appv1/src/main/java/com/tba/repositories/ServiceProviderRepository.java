@@ -12,7 +12,14 @@ import java.util.List;
  * @author HP Zbook 15
  */
 public interface ServiceProviderRepository {
+
     List<ServiceProvider> getAllServiceProviders();
-    
+
     void deleteProvider(Integer id);
+
+    public void addProvider(ServiceProvider u);
+
+    void updateProvider(ServiceProvider provider);
+
+    ServiceProvider getProviderById(Integer id);
 }
