@@ -8,15 +8,17 @@ package com.tba.services.impl;
  *
  * @author HP Zbook 15
  */
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.tba.pojo.ServiceProvider;
 import com.tba.pojo.User;
 import com.tba.repositories.ServiceProviderRepository;
 import com.tba.services.ServiceProviderService;
 import com.tba.services.UserService;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -38,6 +40,10 @@ public class ServiceProviderServiceImpl implements ServiceProviderService {
     }
 
     @Override
+
+    public ServiceProvider getServiceProviderByUserId(int userId) {
+        return this.serviceProviderRepository.getServiceProviderByUserId(userId);
+    }
     public void addProvider(User u, ServiceProvider p) {
         this.userService.addUser(u);
         this.serviceProviderRepository.addProvider(p);

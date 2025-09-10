@@ -1,11 +1,12 @@
 package com.tba.controllers;
+/**
+ *
+ * @author HP Zbook 15
+ */
 
-import com.tba.enums.State;
-import com.tba.pojo.ServiceProvider;
-import com.tba.pojo.User;
-import com.tba.services.ServiceProviderService;
-import com.tba.services.UserService;
-import jakarta.validation.Valid;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +15,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.List;
+import com.tba.enums.State;
+import com.tba.pojo.ServiceProvider;
+import com.tba.pojo.User;
+import com.tba.services.ServiceProviderService;
+import com.tba.services.UserService;
+
+import jakarta.validation.Valid;
 
 @Controller
 public class ServiceProviderController {

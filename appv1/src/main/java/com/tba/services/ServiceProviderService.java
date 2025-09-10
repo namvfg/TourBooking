@@ -8,9 +8,10 @@ package com.tba.services;
  *
  * @author HP Zbook 15
  */
+import java.util.List;
+
 import com.tba.pojo.ServiceProvider;
 import com.tba.pojo.User;
-import java.util.List;
 
 public interface ServiceProviderService {
 
@@ -18,6 +19,8 @@ public interface ServiceProviderService {
 
     void deleteProvider(Integer id);
 
+    
+    ServiceProvider getServiceProviderByUserId(int userId);
     void addProvider(User u, ServiceProvider p);
 
     void updateProvider(ServiceProvider provider);

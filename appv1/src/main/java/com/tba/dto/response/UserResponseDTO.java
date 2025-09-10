@@ -4,6 +4,7 @@
  */
 package com.tba.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tba.enums.UserRole;
 import java.util.Date;
 
@@ -21,7 +22,9 @@ public class UserResponseDTO {
     private UserRole role;
     private String address;
     private String phoneNumber;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date updatedAt;
 
     public UserResponseDTO() {

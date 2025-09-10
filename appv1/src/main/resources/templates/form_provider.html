@@ -42,7 +42,7 @@
 
                     <div class="col-md-6">
                         <label for="createdAt" class="form-label">Ngày tạo</label>
-                        <input type="text" th:value="${#dates.format(provider.createdAt, 'dd/MM/yyyy HH:mm')}" readonly />
+                        <input type="text" th:value="${#dates.format(provider.createdAt, 'dd/MM/yyyy HH:mm')}" class="form-control" id="createdAt" readonly />
                     </div>
 
                     <div class="col-md-6">

@@ -28,10 +28,21 @@ const Login = () => {
             }
 
             cookie.save("token", token, { path: "/" });
-            const profileRes = await authApis(token).get(endpoints["profile"]);
-            dispatch({ type: "login", payload: profileRes.data });
 
-            toast.success("🎉 Đăng nhập thành công!");
+            const profileRes = await authApis(token).get(endpoints["profile"]);
+            
+            let profileData = profileRes.data;
+            if (profileData.role === "PROVIDER") {
+                const providerRes = await authApis(token).get(endpoints["provider-profile"]);
+                profileData = {
+                    ...profileData,
+                    provider: providerRes.data,
+                };
+            }
+
+            dispatch({ type: "login", payload: profileData });
+
+            toast.success("Đăng nhập thành công!");
             navigate("/");
         } catch (err) {
             console.error(err);

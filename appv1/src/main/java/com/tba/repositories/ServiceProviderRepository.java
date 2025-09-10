@@ -4,8 +4,9 @@
  */
 package com.tba.repositories;
 
-import com.tba.pojo.ServiceProvider;
 import java.util.List;
+
+import com.tba.pojo.ServiceProvider;
 
 /**
  *
@@ -16,6 +17,8 @@ public interface ServiceProviderRepository {
     List<ServiceProvider> getAllServiceProviders();
 
     void deleteProvider(Integer id);
+    
+    ServiceProvider getServiceProviderByUserId(int userId);
 
     public void addProvider(ServiceProvider u);
 

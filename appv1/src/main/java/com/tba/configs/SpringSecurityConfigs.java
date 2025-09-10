@@ -53,7 +53,7 @@ public class SpringSecurityConfigs {
     public HandlerMappingIntrospector mvcHandlerMappingIntrospector() {
         return new HandlerMappingIntrospector();
     }
-    
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -76,13 +76,15 @@ public class SpringSecurityConfigs {
                 .requestMatchers("/login", "/logout", "/access-denied").permitAll()
                 .requestMatchers("/api/login", "/api/register", "/api/users", "/api/provider/register").permitAll() // Các API login/register
                 .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll() // Các API product công khai
-
                 // 4. Các đường dẫn web admin, yêu cầu xác thực bằng session (form login)
                 .requestMatchers("/", "/home").hasAuthority("ADMIN")
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                // 5. Các API bảo mật bằng JWT (JWTFilter sẽ xử lý JWT, sau đó Spring Security kiểm tra role)
+                .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/secure/provider/**").hasAnyAuthority("ADMIN", "PROVIDER")
+                .requestMatchers(HttpMethod.POST, "/api/secure/provider/**").hasAuthority("PROVIDER")
+                .requestMatchers(HttpMethod.PUT, "/api/secure/provider/**").hasAuthority("PROVIDER")
+                .requestMatchers(HttpMethod.DELETE, "/api/secure/provider/**").hasAuthority("PROVIDER")
                 .requestMatchers("/api/secure/**").authenticated()
-                .requestMatchers("/api/secure/profile").authenticated()
+                .requestMatchers("/api/enums/**").permitAll()
                 // 6. Mọi request khác còn lại đều phải xác thực (deny by default)
                 .anyRequest().authenticated()
                 ).formLogin(form -> form
@@ -115,15 +117,4 @@ public class SpringSecurityConfigs {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-//    @Bean
-//    public Cloudinary cloudinary() {
-//        Cloudinary cloudinary
-//                = new Cloudinary(ObjectUtils.asMap(
-//                        "cloud_name", "dcee16rsp",
-//                        "api_key", "645857166697866",
-//                        "api_secret", "QpsoRSYSM8S4rzFOS51f3615UmQ",
-//                        "secure", true));
-//        return cloudinary;
-//    }
 }
