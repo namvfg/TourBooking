@@ -36,5 +36,7 @@ public interface UserService extends UserDetailsService {
     boolean existsByEmail(String email);
 
     boolean existsByPhoneNumber(String phoneNumber);
+    
+    User getUserById(Integer id);
 
 }
