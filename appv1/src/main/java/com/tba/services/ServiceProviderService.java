@@ -19,8 +19,8 @@ public interface ServiceProviderService {
 
     void deleteProvider(Integer id);
 
-    
     ServiceProvider getServiceProviderByUserId(int userId);
+
     void addProvider(User u, ServiceProvider p);
 
     void updateProvider(ServiceProvider provider);
