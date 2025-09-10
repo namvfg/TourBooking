@@ -9,8 +9,10 @@ package com.tba.services.impl;
  * @author HP Zbook 15
  */
 import com.tba.pojo.ServiceProvider;
+import com.tba.pojo.User;
 import com.tba.repositories.ServiceProviderRepository;
 import com.tba.services.ServiceProviderService;
+import com.tba.services.UserService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ public class ServiceProviderServiceImpl implements ServiceProviderService {
 
     @Autowired
     private ServiceProviderRepository serviceProviderRepository;
+    @Autowired
+    private UserService userService;
 
     @Override
     public List<ServiceProvider> getAllServiceProviders() {
@@ -31,5 +35,21 @@ public class ServiceProviderServiceImpl implements ServiceProviderService {
     @Override
     public void deleteProvider(Integer id) {
         serviceProviderRepository.deleteProvider(id);
+    }
+
+    @Override
+    public void addProvider(User u, ServiceProvider p) {
+        this.userService.addUser(u);
+        this.serviceProviderRepository.addProvider(p);
+    }
+
+    @Override
+    public void updateProvider(ServiceProvider provider) {
+        serviceProviderRepository.updateProvider(provider);
+    }
+
+    @Override
+    public ServiceProvider getProviderById(Integer id) {
+        return serviceProviderRepository.getProviderById(id);
     }
 }

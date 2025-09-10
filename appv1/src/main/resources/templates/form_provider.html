@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Cập nhật nhà cung cấp</title>
+    <th:block th:replace="base :: resource"></th:block>
+    <th:block th:replace="fragments/table_sidebar :: resource"></th:block>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+    <div class="admin-wrapper">
+        <div th:replace="fragments/table_sidebar :: tableSidebar"></div>
+        <div class="main-content">
+            <h2 class="mb-4">Cập nhật nhà cung cấp</h2>
+            <div class="container">
+                <form th:action="@{/provider/update}" th:object="${provider}" method="post" class="row g-3 needs-validation" novalidate>
+                    <input type="hidden" th:field="*{id}" />
+                    <input type="hidden" th:field="*{userId.id}" />
+
+                    <div class="col-md-6">
+                        <label for="companyName" class="form-label">Tên công ty</label>
+                        <input type="text" th:field="*{companyName}" class="form-control" id="companyName" required />
+                        <div class="invalid-feedback">
+                            Vui lòng nhập tên công ty.
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 d-flex align-items-center">
+                        <label for="isApproved" class="form-label me-2">Xét duyệt:</label>
+                        <input type="checkbox" th:field="*{isApproved}" class="form-check-input" id="isApproved" />
+                        <span class="ms-2">Đã duyệt</span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="state" class="form-label">Trạng thái</label>
+                        <select th:field="*{state}" class="form-select" id="state" required>
+                            <option th:each="s : ${states}" th:value="${s}" th:text="${s}"></option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Vui lòng chọn trạng thái.
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="createdAt" class="form-label">Ngày tạo</label>
+                        <input type="text" th:value="${#dates.format(provider.createdAt, 'dd/MM/yyyy HH:mm')}" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="updatedAt" class="form-label">Ngày cập nhật</label>
+                        <input type="text" th:value="${#dates.format(provider.updatedAt, 'dd/MM/yyyy HH:mm')}" class="form-control" id="updatedAt" readonly />
+                    </div>
+
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+                        <a th:href="@{/providers}" class="btn btn-secondary ms-2">Quay lại</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div th:replace="base :: footer"></div>
+    <script>
+        // Bootstrap form validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+</body>
+</html>

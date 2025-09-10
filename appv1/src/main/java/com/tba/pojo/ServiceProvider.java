@@ -65,12 +65,10 @@ public class ServiceProvider implements Serializable {
     @Column(name = "state")
     private State state;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;

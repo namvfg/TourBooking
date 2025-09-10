@@ -124,4 +124,9 @@ public class UserServiceImpl implements UserService {
     public boolean existsByPhoneNumber(String phoneNumber) {
         return this.userRepository.existsByPhoneNumber(phoneNumber);
     }
+
+    @Override
+    public User getUserById(Integer id) {
+        return userRepository.getUserById(id); 
+    }
 }
