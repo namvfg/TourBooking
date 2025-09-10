@@ -11,5 +11,5 @@ import com.tba.pojo.ServiceProvider;
  * @author Admin
  */
 public interface ProviderRepository {
-    public void addProvider(ServiceProvider u);
+    void addProvider(ServiceProvider u);
 }

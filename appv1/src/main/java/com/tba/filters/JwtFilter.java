@@ -77,7 +77,7 @@ public class JwtFilter implements Filter {
                         String role = claims[1];
                         System.out.println("Claims: username=" + username + ", role=" + role);
                         httpRequest.setAttribute("username", username);
-                        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+                        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
                         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, Collections.singletonList(authority));
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                         chain.doFilter(request, response);

@@ -40,8 +40,6 @@ public class ApiUserController {
     private CloudinaryService cloudinaryService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private Environment env;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO dto) {

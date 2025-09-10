@@ -28,6 +28,5 @@ public class ProviderRepositoryImpl implements ProviderRepository {
             throw new IllegalArgumentException("ID must not be set manually when using GenerationType.IDENTITY");
         }
         s.persist(p);
-        s.flush();
     }
 }

@@ -32,4 +32,9 @@ public class ServiceProviderServiceImpl implements ServiceProviderService {
     public void deleteProvider(Integer id) {
         serviceProviderRepository.deleteProvider(id);
     }
+
+    @Override
+    public ServiceProvider getServiceProviderByUserId(int userId) {
+        return this.serviceProviderRepository.getServiceProviderByUserId(userId);
+    }
 }

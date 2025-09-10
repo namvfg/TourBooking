@@ -8,12 +8,6 @@ package com.tba.controllers;
  *
  * @author HP Zbook 15
  */
-import com.tba.pojo.ServiceProvider;
-import com.tba.repositories.ServiceProviderRepository;
-import com.tba.services.ServiceProviderService;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.tba.pojo.ServiceProvider;
 import com.tba.services.ServiceProviderService;

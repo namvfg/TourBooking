@@ -14,4 +14,6 @@ public interface ServiceProviderService {
     List<ServiceProvider> getAllServiceProviders();
     
     void deleteProvider(Integer id);
+    
+    ServiceProvider getServiceProviderByUserId(int userId);
 }

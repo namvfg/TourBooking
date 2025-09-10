@@ -45,4 +45,15 @@ public class ServiceProviderRepositoryImpl implements ServiceProviderRepository 
             session.delete(provider);
         }
     }
+
+    @Override
+    public ServiceProvider getServiceProviderByUserId(int userId) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<ServiceProvider> q = b.createQuery(ServiceProvider.class);
+        Root root = q.from(ServiceProvider.class);
+        q.select(root);
+        q.where(b.equal(root.get("userId").get("id"), userId));
+        return session.createQuery(q).uniqueResult();
+    }
 }

@@ -12,7 +12,11 @@ export const endpoints = {
 
     //provider
     "provider-register": "/provider/register",
-    "provider-profile": "/secure/provider/profile"
+    "provider-profile": "/secure/provider/profile",
+    "provider-request-permission": "/secure/provider/request-permission",
+
+    //enums
+    "service-types": "/enums/service-types"
 };
 
 export const authApis = (token) => axios.create({
