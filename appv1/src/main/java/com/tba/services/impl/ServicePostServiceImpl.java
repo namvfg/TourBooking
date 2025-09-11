@@ -32,4 +32,29 @@ public class ServicePostServiceImpl implements ServicePostService {
     public void softDeleteServicePost(Integer id) {
         servicePostRepository.softDeleteServicePost(id);
     }
+
+    @Override
+    public ServicePost getServicePostById(Integer id) {
+        return servicePostRepository.getServicePostById(id);
+    }
+
+    @Override
+    public void addServicePost(ServicePost post) {
+        servicePostRepository.addServicePost(post);
+    }
+
+    @Override
+    public void updateServicePost(ServicePost post) {
+        servicePostRepository.updateServicePost(post);
+    }
+
+    @Override
+    public List<ServicePost> getServicePostsPaged(int page, int size) {
+        return servicePostRepository.getServicePostsPaged(page, size);
+    }
+
+    @Override
+    public long countServicePosts() {
+        return servicePostRepository.countServicePosts();
+    }
 }

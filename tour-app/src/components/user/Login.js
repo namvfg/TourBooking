@@ -32,7 +32,6 @@ const Login = () => {
             const profileRes = await authApis(token).get(endpoints["profile"]);
             let profileData = profileRes.data;
 
-
             if (profileData.role === "PROVIDER") {
                 const statusRes = await authApis(token).get(endpoints["provider-check-status"]);
                 const { status, message } = statusRes.data;
@@ -48,10 +47,17 @@ const Login = () => {
                     return;
                 }
 
+                // LẤY THÊM provider profile
+                try {
+                    const providerRes = await authApis(token).get(endpoints["provider-profile"]);
+                    const providerData = providerRes.data;
+                    profileData = { ...profileData, provider: providerData };
+                } catch (err) {
+                    console.error("Failed to fetch provider profile:", err);
+                }
             }
 
-
-            dispatch({ type: "login", payload: profileData });
+            dispatch({ type: "login", payload: { ...profileData, token } });
             toast.success("Đăng nhập thành công!");
             navigate("/");
         } catch (err) {

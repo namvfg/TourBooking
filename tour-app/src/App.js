@@ -18,6 +18,9 @@ import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import Profile from './components/user/Profile';
 import Unauthorized from './components/others/Unauthorized';
+import ServicePostList from "./components/ServicePostList";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import ServicePostDetail from './components/provider/ServicePostDetail';
 
 const App = () => {
 
@@ -43,7 +46,7 @@ const App = () => {
           }
         }
 
-        dispatch({ type: "login", payload: userData });
+        dispatch({ type: "login", payload: { ...userData, token } });
       } catch (error) {
         console.error("Failed to fetch user profile with stored token:", error);
         dispatch({ type: "logout" });
@@ -76,6 +79,8 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/unauthorized" element={<Unauthorized />} />
+                <Route path="/service-posts" element={<ServicePostList />} />
+                <Route path="/service-post/:id" element={<ServicePostDetail />} />
 
                 <Route
                   path="/profile"

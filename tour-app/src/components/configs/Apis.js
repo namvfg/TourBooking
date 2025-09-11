@@ -5,6 +5,8 @@ const BASE_URL = `http://localhost:8080/${SERVER_CONTEXT}/api`
 
 export const endpoints = {
     "login": "/login",
+    "service-post-list": "/service-post/all",
+    "service-post-detail": "/service-post", 
 
     //user
     "register": "/register",
@@ -15,6 +17,10 @@ export const endpoints = {
     "provider-profile": "/secure/provider/profile",
     "provider-request-permission": "/secure/provider/request-permission",
     "provider-check-status": "/secure/provider/check-status",
+    "service-post-add": "/secure/service-post/add",
+    "service-post-edit": "/secure/service-post/edit",    
+    "service-post-delete": "/secure/service-post/delete",
+    "service-post-delete": "/secure/service-post/edit",
 
     //enums
     "service-types": "/enums/service-types"
