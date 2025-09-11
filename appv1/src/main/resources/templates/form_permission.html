@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Duyệt quyền dịch vụ</title>
+    <th:block th:replace="base :: resource"></th:block>
+    <th:block th:replace="fragments/table_sidebar :: resource"></th:block>
+</head>
+<body>
+    <div th:replace="base :: header"></div>
+    <div class="admin-wrapper">
+        <div th:replace="fragments/table_sidebar :: tableSidebar"></div>
+        <div class="main-content">
+            <h2 class="mb-4">Duyệt/Cập nhật quyền dịch vụ</h2>
+            <div class="container">
+                <form th:action="@{/admin/permission/update}" th:object="${permission}" method="post" class="row g-3 needs-validation" novalidate>
+                    <input type="hidden" th:field="*{id}" />
+                    <div class="col-md-6">
+                        <label class="form-label">Tên công ty</label>
+                        <input type="text" th:value="${permission.serviceProviderId.companyName}" class="form-control" readonly />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Loại dịch vụ</label>
+                        <input type="text" th:value="${permission.serviceType}" class="form-control" readonly />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Trạng thái quyền</label>
+                        <select th:field="*{state}" class="form-select" required>
+                            <option th:each="s : ${states}" th:value="${s}" th:text="${s}"></option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Vui lòng chọn trạng thái.
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Ngày tạo</label>
+                        <input type="text" th:value="${#dates.format(permission.createdDate, 'dd/MM/yyyy HH:mm')}" class="form-control" readonly />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Ngày cập nhật</label>
+                        <input type="text" th:value="${#dates.format(permission.updatedDate, 'dd/MM/yyyy HH:mm')}" class="form-control" readonly />
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+                        <a th:href="@{/admin/permissions}" class="btn btn-secondary ms-2">Quay lại</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div th:replace="base :: footer"></div>
+</body>
+</html>

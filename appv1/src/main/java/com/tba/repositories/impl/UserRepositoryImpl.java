@@ -137,4 +137,15 @@ public class UserRepositoryImpl implements UserRepository {
         return session.get(User.class, id);
     }
 
+    @Override
+    public User getUserByProviderId(Integer providerId) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<User> q = b.createQuery(User.class);
+        Root root = q.from(User.class);
+        q.select(root);
+        q.where(b.equal(root.get("serviceProvider").get("id"), providerId));
+        return session.createQuery(q).uniqueResult();
+    }
+
 }

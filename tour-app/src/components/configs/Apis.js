@@ -14,6 +14,7 @@ export const endpoints = {
     "provider-register": "/provider/register",
     "provider-profile": "/secure/provider/profile",
     "provider-request-permission": "/secure/provider/request-permission",
+    "provider-check-status": "/secure/provider/check-status",
 
     //enums
     "service-types": "/enums/service-types"

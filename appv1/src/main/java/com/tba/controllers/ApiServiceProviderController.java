@@ -187,4 +187,35 @@ public class ApiServiceProviderController {
                 "message", "Yêu cầu xử lý thành công."
         ));
     }
+
+    @GetMapping("secure/provider/check-status")
+    public ResponseEntity<?> checkProviderStatus(Principal principal) {
+        User u = this.userService.getUserByUsername(principal.getName());
+
+        // Nếu user không phải PROVIDER, trả về trạng thái bình thường (hoặc thông báo không liên quan)
+        if (u == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Không tìm thấy người dùng!"));
+        }
+
+        // Nếu user không phải PROVIDER, trả về luôn là ACTIVE để FE không cần xử lý gì thêm
+        if (u.getRole() != UserRole.PROVIDER) {
+            return ResponseEntity.ok(Map.of("status", "ACTIVE", "message", "Bạn đăng nhập bình thường!"));
+        }
+
+        ServiceProvider sp = u.getServiceProvider();
+        if (sp == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Không tìm thấy thông tin nhà cung cấp"));
+        }
+
+        switch (sp.getState()) {
+            case ACTIVE:
+                return ResponseEntity.ok(Map.of("status", "ACTIVE", "message", "Bạn đã được duyệt. Hãy vào trang chủ!"));
+            case DISABLED:
+                return ResponseEntity.ok(Map.of("status", "DISABLED", "message", "Tài khoản của bạn đã bị khóa!"));
+            case PENDING:
+                return ResponseEntity.ok(Map.of("status", "PENDING", "message", "Tài khoản của bạn đang chờ duyệt!"));
+            default:
+                return ResponseEntity.ok(Map.of("status", "UNKNOWN", "message", "Trạng thái không xác định!"));
+        }
+    }
 }
