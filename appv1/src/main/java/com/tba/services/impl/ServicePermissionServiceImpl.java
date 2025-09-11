@@ -49,4 +49,13 @@ public class ServicePermissionServiceImpl implements ServicePermissionService {
         return this.servicePermissionRepository.existsByProviderAndServiceType(providerId, type);
     }
 
+    @Override
+    public ServicePermission getPermissionById(Integer id) {
+        return servicePermissionRepository.getPermissionById(id);
+    }
+
+    @Override
+    public List<ServicePermission> getAllPermissions() {
+        return servicePermissionRepository.getAllPermissions();
+    }
 }

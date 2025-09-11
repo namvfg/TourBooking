@@ -77,4 +77,16 @@ public class ServicePermissionRepositoryImpl implements ServicePermissionReposit
         return count != null && count > 0;
     }
 
+    @Override
+    public ServicePermission getPermissionById(Integer id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        return s.get(ServicePermission.class, id);
+    }
+
+    @Override
+    public List<ServicePermission> getAllPermissions() {
+        Session s = this.factory.getObject().getCurrentSession();
+        return s.createQuery("FROM ServicePermission", ServicePermission.class).getResultList();
+    }
+
 }

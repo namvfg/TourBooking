@@ -38,5 +38,7 @@ public interface UserService extends UserDetailsService {
     boolean existsByPhoneNumber(String phoneNumber);
     
     User getUserById(Integer id);
+    
+    User getUserByProviderId(Integer providerId);
 
 }

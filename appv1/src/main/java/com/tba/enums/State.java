@@ -11,5 +11,5 @@ package com.tba.enums;
 public enum State {
     PENDING,
     ACTIVE,
-    DISABLE
+    DISABLED
 }

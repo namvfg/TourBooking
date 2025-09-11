@@ -30,18 +30,28 @@ const Login = () => {
             cookie.save("token", token, { path: "/" });
 
             const profileRes = await authApis(token).get(endpoints["profile"]);
-            
             let profileData = profileRes.data;
+
+
             if (profileData.role === "PROVIDER") {
-                const providerRes = await authApis(token).get(endpoints["provider-profile"]);
-                profileData = {
-                    ...profileData,
-                    provider: providerRes.data,
-                };
+                const statusRes = await authApis(token).get(endpoints["provider-check-status"]);
+                const { status, message } = statusRes.data;
+
+                if (status === "PENDING") {
+                    toast.info(message || "Tài khoản nhà cung cấp đang chờ duyệt!");
+                    setLoading(false);
+                    return;
+                }
+                if (status === "DISABLED") {
+                    toast.error(message || "Tài khoản nhà cung cấp đã bị khóa!");
+                    setLoading(false);
+                    return;
+                }
+
             }
 
-            dispatch({ type: "login", payload: profileData });
 
+            dispatch({ type: "login", payload: profileData });
             toast.success("Đăng nhập thành công!");
             navigate("/");
         } catch (err) {

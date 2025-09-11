@@ -130,4 +130,9 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Integer id) {
         return userRepository.getUserById(id); 
     }
+
+    @Override
+    public User getUserByProviderId(Integer providerId) {
+       return this.userRepository.getUserByProviderId(providerId);
+    }
 }

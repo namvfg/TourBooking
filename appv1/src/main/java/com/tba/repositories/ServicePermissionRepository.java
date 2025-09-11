@@ -23,4 +23,8 @@ public interface ServicePermissionRepository {
     void updateServicePermission(ServicePermission servicePermission);
 
     boolean existsByProviderAndServiceType(int providerId, ServiceType type);
+    
+    ServicePermission getPermissionById(Integer id);
+    
+    List<ServicePermission> getAllPermissions();
 }
