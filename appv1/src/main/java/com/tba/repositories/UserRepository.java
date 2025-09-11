@@ -33,7 +33,7 @@ public interface UserRepository {
     
     boolean existsByPhoneNumber(String phoneNumber);
     
-   User getUserById(Integer id);
+    User getUserById(Integer id);
     
     User getUserByProviderId(Integer providerId);
 }

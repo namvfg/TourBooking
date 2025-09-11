@@ -37,7 +37,6 @@ public class ServicePostRepositoryImpl implements ServicePostRepository {
         }
     }
 
-
     @Override
     public List<ServicePost> getAllServicePosts() {
         Session session = this.factory.getObject().getCurrentSession();
@@ -46,5 +45,48 @@ public class ServicePostRepositoryImpl implements ServicePostRepository {
         Root<ServicePost> root = cq.from(ServicePost.class);
         cq.select(root).where(cb.equal(root.get("isDeleted"), false));
         return session.createQuery(cq).getResultList();
+    }
+
+    @Override
+    public ServicePost getServicePostById(Integer id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        return session.get(ServicePost.class, id);
+    }
+
+    @Override
+    @Transactional
+    public void addServicePost(ServicePost post) {
+        Session session = this.factory.getObject().getCurrentSession();
+        session.persist(post);
+    }
+
+    @Override
+    @Transactional
+    public void updateServicePost(ServicePost post) {
+        Session session = this.factory.getObject().getCurrentSession();
+        session.merge(post);
+    }
+
+    @Override
+    public List<ServicePost> getServicePostsPaged(int page, int size) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<ServicePost> cq = cb.createQuery(ServicePost.class);
+        Root<ServicePost> root = cq.from(ServicePost.class);
+        cq.select(root).where(cb.equal(root.get("isDeleted"), false));
+        return session.createQuery(cq)
+                .setFirstResult(page * size)
+                .setMaxResults(size)
+                .getResultList();
+    }
+
+    @Override
+    public long countServicePosts() {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<ServicePost> root = cq.from(ServicePost.class);
+        cq.select(cb.count(root)).where(cb.equal(root.get("isDeleted"), false));
+        return session.createQuery(cq).getSingleResult();
     }
 }

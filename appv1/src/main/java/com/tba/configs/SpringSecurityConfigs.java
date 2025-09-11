@@ -63,36 +63,31 @@ public class SpringSecurityConfigs {
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
                 .authorizeHttpRequests(requests -> requests
-                // 1. Cho phép các yêu cầu OPTIONS (CORS preflight) đi qua
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // 2. CẤU HÌNH TÀI NGUYÊN TĨNH 
-
-                .requestMatchers("/css/**").permitAll() // Cho phép truy cập tất cả các tệp trong thư mục /css/
-                .requestMatchers("/js/**").permitAll() // Cho phép truy cập tất cả các tệp trong thư mục /js/
-                .requestMatchers("/images/**").permitAll() // Cho phép truy cập tất cả các tệp trong thư mục /images/
-                .requestMatchers("/fonts/**").permitAll()
-                .requestMatchers("/resources/**").permitAll()
-                .requestMatchers("/static/**").permitAll()
-                .requestMatchers("/login", "/logout", "/access-denied").permitAll()
-                .requestMatchers("/api/login", "/api/register", "/api/users", "/api/provider/register").permitAll() // Các API login/register
-                .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll() // Các API product công khai
-                // 4. Các đường dẫn web admin, yêu cầu xác thực bằng session (form login)
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/fonts/**", "/resources/**", "/static/**").permitAll()
+                .requestMatchers("/appv1/login", "/appv1/logout", "/appv1/access-denied").permitAll()
+                .requestMatchers("/api/login", "/api/register", "/api/users", "/api/provider/register").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/service-post/**").permitAll()
                 .requestMatchers("/", "/home").hasAuthority("ADMIN")
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/secure/provider/**").hasAnyAuthority("ADMIN", "PROVIDER")
                 .requestMatchers(HttpMethod.POST, "/api/secure/provider/**").hasAuthority("PROVIDER")
                 .requestMatchers(HttpMethod.PUT, "/api/secure/provider/**").hasAuthority("PROVIDER")
                 .requestMatchers(HttpMethod.DELETE, "/api/secure/provider/**").hasAuthority("PROVIDER")
+                .requestMatchers(HttpMethod.DELETE, "/api/secure/service-post/**").hasAuthority("PROVIDER")
+                .requestMatchers(HttpMethod.PUT, "/api/secure/service-post/**").hasAuthority("PROVIDER")
                 .requestMatchers("/api/secure/**").authenticated()
                 .requestMatchers("/api/enums/**").permitAll()
-                // 6. Mọi request khác còn lại đều phải xác thực (deny by default)
                 .anyRequest().authenticated()
-                ).formLogin(form -> form
+                )
+                .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/", true)
                 .failureUrl("/login?error=true").permitAll()
-                ).logout(logout -> logout
+                )
+                .logout(logout -> logout
                 .logoutSuccessUrl("/login").permitAll()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

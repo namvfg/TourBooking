@@ -15,4 +15,13 @@ public interface ServicePostRepository {
     List<ServicePost> getAllServicePosts();
     
     void softDeleteServicePost(Integer id);
+
+    ServicePost getServicePostById(Integer id);   
+    
+    void addServicePost(ServicePost post);       
+    
+    void updateServicePost(ServicePost post); 
+    
+    List<ServicePost> getServicePostsPaged(int page, int size);
+    long countServicePosts();
 }
