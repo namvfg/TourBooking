@@ -9,6 +9,9 @@ package com.tba.repositories;
  * @author HP Zbook 15
  */
 import com.tba.pojo.ServicePost;
+import com.tba.pojo.Room;
+import com.tba.pojo.Tour;
+import com.tba.pojo.Transportation;
 import java.util.List;
 
 public interface ServicePostRepository {
@@ -24,4 +27,7 @@ public interface ServicePostRepository {
     
     List<ServicePost> getServicePostsPaged(int page, int size);
     long countServicePosts();
+    
 }
+
+

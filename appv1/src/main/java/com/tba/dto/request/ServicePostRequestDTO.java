@@ -1,6 +1,7 @@
 package com.tba.dto.request;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 public class ServicePostRequestDTO {
     private String name;
@@ -9,8 +10,21 @@ public class ServicePostRequestDTO {
     private BigDecimal price;
     private int availableSlot;
     private String address;
-    private String serviceType;    
+    private String serviceType;
     private Integer serviceProviderId;
+
+    // ROOM fields
+    private Date roomStartDate;
+    private Date roomEndDate;
+
+    // TOUR fields
+    private Date tourStartDate;
+    private Date tourEndDate;
+
+    // TRANSPORTATION fields
+    private String transportType;
+    private Date transportStartDate;
+    private String destination;
 
     // Getter & Setter
     public String getName() { return name; }
@@ -36,4 +50,25 @@ public class ServicePostRequestDTO {
 
     public Integer getServiceProviderId() { return serviceProviderId; }
     public void setServiceProviderId(Integer serviceProviderId) { this.serviceProviderId = serviceProviderId; }
+
+    public Date getRoomStartDate() { return roomStartDate; }
+    public void setRoomStartDate(Date roomStartDate) { this.roomStartDate = roomStartDate; }
+
+    public Date getRoomEndDate() { return roomEndDate; }
+    public void setRoomEndDate(Date roomEndDate) { this.roomEndDate = roomEndDate; }
+
+    public Date getTourStartDate() { return tourStartDate; }
+    public void setTourStartDate(Date tourStartDate) { this.tourStartDate = tourStartDate; }
+
+    public Date getTourEndDate() { return tourEndDate; }
+    public void setTourEndDate(Date tourEndDate) { this.tourEndDate = tourEndDate; }
+
+    public String getTransportType() { return transportType; }
+    public void setTransportType(String transportType) { this.transportType = transportType; }
+
+    public Date getTransportStartDate() { return transportStartDate; }
+    public void setTransportStartDate(Date transportStartDate) { this.transportStartDate = transportStartDate; }
+
+    public String getDestination() { return destination; }
+    public void setDestination(String destination) { this.destination = destination; }
 }

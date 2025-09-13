@@ -4,8 +4,22 @@ import axios, { endpoints, authApis } from "../configs/Apis";
 import { MyUserContext } from "../configs/Context";
 import { Card, Button, Spinner, Alert, Modal, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import CustomEditor from '../../ckeditor/build/ckeditor';
+import { UploadAdapterPlugin } from "../layout/CustomUploadAdapter";
+import cookie from "react-cookies";
 
-// Hàm format lại ngày trả về từ BE (timestamp hoặc chuỗi)
+const SERVICE_TYPE_OPTIONS = [
+    "ROOM",
+    "TOUR",
+    "TRANSPORTATION"
+];
+const TRANSPORT_ENUMS = [
+    { value: "BUS", label: "Xe Bus" },
+    { value: "PLANE", label: "Máy bay" },
+    { value: "SHIP", label: "Tàu thuỷ" }
+];
+
 const formatDate = (dateVal) => {
     if (!dateVal) return "";
     if (typeof dateVal === "number") {
@@ -27,7 +41,6 @@ const ServicePostDetail = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    // Modal "Cập nhật"
     const [showEditModal, setShowEditModal] = useState(false);
     const [editData, setEditData] = useState(null);
     const [editLoading, setEditLoading] = useState(false);
@@ -49,7 +62,6 @@ const ServicePostDetail = () => {
         loadDetail();
     }, [id, user]);
 
-    // Kiểm tra quyền owner: so sánh kiểu số để tránh lỗi kiểu dữ liệu
     const isOwner =
         user &&
         user.role === "PROVIDER" &&
@@ -57,7 +69,6 @@ const ServicePostDetail = () => {
         post &&
         Number(user.provider.providerId) === Number(post.serviceProviderId);
 
-    // Mở modal cập nhật và truyền dữ liệu cũ vào
     const handleEdit = () => {
         if (!post) return;
         setEditData({
@@ -67,18 +78,33 @@ const ServicePostDetail = () => {
             availableSlot: post.availableSlot,
             address: post.address,
             serviceType: post.serviceType,
-            image: null // Chưa hỗ trợ sửa ảnh, giữ nguyên ảnh cũ nếu không chọn
+            image: null,
+            transportType: post.transportType || "",
+            transportStartDate: post.transportStartDate
+                ? new Date(post.transportStartDate).toISOString().slice(0, 16)
+                : "",
+            destination: post.destination || "",
+            roomStartDate: post.roomStartDate
+                ? new Date(post.roomStartDate).toISOString().slice(0, 16)
+                : "",
+            roomEndDate: post.roomEndDate
+                ? new Date(post.roomEndDate).toISOString().slice(0, 16)
+                : "",
+            tourStartDate: post.tourStartDate
+                ? new Date(post.tourStartDate).toISOString().slice(0, 16)
+                : "",
+            tourEndDate: post.tourEndDate
+                ? new Date(post.tourEndDate).toISOString().slice(0, 16)
+                : ""
         });
         setShowEditModal(true);
     };
 
-    // Xử lý submit cập nhật
     const handleEditSubmit = async (e) => {
         e.preventDefault();
         setEditLoading(true);
         try {
             const url = `${endpoints["service-post-edit"]}/${id}`;
-            // Chuẩn bị dữ liệu gửi đi
             const formData = new FormData();
             formData.append("name", editData.name);
             formData.append("description", editData.description);
@@ -88,12 +114,26 @@ const ServicePostDetail = () => {
             formData.append("serviceType", editData.serviceType);
             if (editData.image) formData.append("image", editData.image);
 
-            await authApis(user.token).put(url, formData, {
+            if (editData.serviceType === "TRANSPORTATION") {
+                formData.append("transportType", editData.transportType);
+                formData.append("transportStartDate", editData.transportStartDate);
+                formData.append("destination", editData.destination);
+            }
+            if (editData.serviceType === "ROOM") {
+                formData.append("roomStartDate", editData.roomStartDate);
+                if (editData.roomEndDate) formData.append("roomEndDate", editData.roomEndDate);
+            }
+            if (editData.serviceType === "TOUR") {
+                formData.append("tourStartDate", editData.tourStartDate);
+                if (editData.tourEndDate) formData.append("tourEndDate", editData.tourEndDate);
+            }
+
+            const token = cookie.load("token");
+            await authApis(token).put(url, formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
             toast.success("Cập nhật thành công!");
             setShowEditModal(false);
-            // Reload lại chi tiết
             const res = await axios.get(`${endpoints["service-post-detail"]}/${id}`);
             setPost(res.data);
         } catch (err) {
@@ -110,10 +150,21 @@ const ServicePostDetail = () => {
         }));
     };
 
+    const handleCKEditorChange = (event, editor) => {
+        const data = editor.getData();
+        setEditData((prev) => ({
+            ...prev,
+            description: data
+        }));
+    };
+
     const handleDelete = async () => {
         if (!window.confirm("Bạn chắc chắn muốn xóa dịch vụ này?")) return;
         try {
-            await authApis(user.token).delete(`${endpoints["service-post-delete"]}/${id}`);
+            const token = cookie.load("token");
+            console.log("Token khi xóa:", token);
+
+            await authApis(token).delete(`${endpoints["service-post-delete"]}/${id}`);
             toast.success("Xóa dịch vụ thành công!");
             navigate("/service-posts");
         } catch (err) {
@@ -140,22 +191,18 @@ const ServicePostDetail = () => {
                 />
             )}
             <Card.Body>
-                {/* Tên nhà cung cấp nổi bật */}
                 <Card.Title style={{ color: "#0d6efd", fontWeight: "bold", fontSize: "1.2rem" }}>
                     {post.companyName}
                 </Card.Title>
-                {/* Tên dịch vụ nổi bật dưới */}
                 <Card.Title style={{ fontWeight: "bold", fontSize: "1.5rem" }}>
                     {post.name}
                 </Card.Title>
                 <Card.Text>
-                    <span
-                        style={{
-                            color: "#28a745",
-                            fontWeight: "bold",
-                            fontSize: "1.2rem",
-                        }}
-                    >
+                    <span style={{
+                        color: "#28a745",
+                        fontWeight: "bold",
+                        fontSize: "1.2rem",
+                    }}>
                         {post.price ? Number(post.price).toLocaleString("vi-VN") : 0} VNĐ
                     </span>
                     <br />
@@ -168,8 +215,10 @@ const ServicePostDetail = () => {
                     </span>
                     <br />
                     <span>
-                        <b>Mô tả:</b> {post.description || ""}
+                        <b>Mô tả:</b>
                     </span>
+                    {/* Đổi từ <p> sang <div> để không vi phạm DOM nesting */}
+                    <div className="service-desc-content" dangerouslySetInnerHTML={{ __html: post.description || "" }} />
                     <br />
                     <span>
                         <b>Ngày tạo:</b> {formatDate(post.createdDate)}
@@ -178,6 +227,46 @@ const ServicePostDetail = () => {
                     <span>
                         <b>Còn lại:</b> {post.availableSlot ?? 0} slot
                     </span>
+                    {post.serviceType === "ROOM" && (
+                        <>
+                            <br />
+                            <span>
+                                <b>Ngày bắt đầu phòng:</b> {formatDate(post.roomStartDate)}
+                            </span>
+                            <br />
+                            <span>
+                                <b>Ngày kết thúc phòng:</b> {formatDate(post.roomEndDate)}
+                            </span>
+                        </>
+                    )}
+                    {post.serviceType === "TOUR" && (
+                        <>
+                            <br />
+                            <span>
+                                <b>Ngày bắt đầu tour:</b> {formatDate(post.tourStartDate)}
+                            </span>
+                            <br />
+                            <span>
+                                <b>Ngày kết thúc tour:</b> {formatDate(post.tourEndDate)}
+                            </span>
+                        </>
+                    )}
+                    {post.serviceType === "TRANSPORTATION" && (
+                        <>
+                            <br />
+                            <span>
+                                <b>Loại phương tiện:</b> {post.transportType}
+                            </span>
+                            <br />
+                            <span>
+                                <b>Ngày khởi hành:</b> {formatDate(post.transportStartDate)}
+                            </span>
+                            <br />
+                            <span>
+                                <b>Điểm đến:</b> {post.destination}
+                            </span>
+                        </>
+                    )}
                 </Card.Text>
                 {isOwner && (
                     <div className="d-flex gap-2 mt-3">
@@ -191,7 +280,6 @@ const ServicePostDetail = () => {
                 )}
             </Card.Body>
 
-            {/* Modal cập nhật dịch vụ */}
             <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Cập nhật dịch vụ</Modal.Title>
@@ -210,13 +298,22 @@ const ServicePostDetail = () => {
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Mô tả</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                name="description"
-                                value={editData?.description || ""}
-                                onChange={handleEditChange}
-                                rows={3}
-                                required
+                            <CKEditor
+                                editor={CustomEditor}
+                                data={editData?.description || ""}
+                                onReady={(editor) => {
+                                    UploadAdapterPlugin(editor);
+                                    editor.editing.view.change((writer) => {
+                                        const root = editor.editing.view.document.getRoot();
+                                        writer.setStyle("min-height", "250px", root);
+                                        writer.setStyle("max-height", "400px", root);
+                                        writer.setStyle("overflow-y", "auto", root);
+                                        writer.setStyle("padding", "10px", root);
+                                        writer.setStyle("border", "1px solid #ccc", root);
+                                        writer.setStyle("border-radius", "6px", root);
+                                    });
+                                }}
+                                onChange={handleCKEditorChange}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
@@ -251,14 +348,103 @@ const ServicePostDetail = () => {
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Loại dịch vụ</Form.Label>
-                            <Form.Control
-                                type="text"
+                            <Form.Select
                                 name="serviceType"
                                 value={editData?.serviceType || ""}
                                 onChange={handleEditChange}
                                 required
-                            />
+                                disabled
+                            >
+                                <option value="">-- Chọn loại dịch vụ --</option>
+                                {SERVICE_TYPE_OPTIONS.map(type => (
+                                    <option key={type} value={type}>{type}</option>
+                                ))}
+                            </Form.Select>
                         </Form.Group>
+                        {editData?.serviceType === "TRANSPORTATION" && (
+                            <>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Loại phương tiện</Form.Label>
+                                    <Form.Select
+                                        name="transportType"
+                                        value={editData.transportType || ""}
+                                        onChange={handleEditChange}
+                                        required
+                                    >
+                                        <option value="">-- Chọn loại phương tiện --</option>
+                                        {TRANSPORT_ENUMS.map(opt => (
+                                            <option value={opt.value} key={opt.value}>{opt.label}</option>
+                                        ))}
+                                    </Form.Select>
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Ngày khởi hành</Form.Label>
+                                    <Form.Control
+                                        type="datetime-local"
+                                        name="transportStartDate"
+                                        value={editData.transportStartDate || ""}
+                                        onChange={handleEditChange}
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Điểm đến</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="destination"
+                                        value={editData.destination || ""}
+                                        onChange={handleEditChange}
+                                        required
+                                    />
+                                </Form.Group>
+                            </>
+                        )}
+                        {editData?.serviceType === "ROOM" && (
+                            <>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Ngày bắt đầu phòng</Form.Label>
+                                    <Form.Control
+                                        type="datetime-local"
+                                        name="roomStartDate"
+                                        value={editData.roomStartDate || ""}
+                                        onChange={handleEditChange}
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Ngày kết thúc phòng</Form.Label>
+                                    <Form.Control
+                                        type="datetime-local"
+                                        name="roomEndDate"
+                                        value={editData.roomEndDate || ""}
+                                        onChange={handleEditChange}
+                                    />
+                                </Form.Group>
+                            </>
+                        )}
+                        {editData?.serviceType === "TOUR" && (
+                            <>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Ngày bắt đầu tour</Form.Label>
+                                    <Form.Control
+                                        type="datetime-local"
+                                        name="tourStartDate"
+                                        value={editData.tourStartDate || ""}
+                                        onChange={handleEditChange}
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Ngày kết thúc tour</Form.Label>
+                                    <Form.Control
+                                        type="datetime-local"
+                                        name="tourEndDate"
+                                        value={editData.tourEndDate || ""}
+                                        onChange={handleEditChange}
+                                    />
+                                </Form.Group>
+                            </>
+                        )}
                         <Form.Group className="mb-3">
                             <Form.Label>Ảnh (không chọn nếu giữ nguyên)</Form.Label>
                             <Form.Control

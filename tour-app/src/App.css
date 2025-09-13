@@ -43,3 +43,18 @@
   display: block;
   margin: 10px auto;
 }
+
+.service-desc-content img,
+.service-desc-content figure,
+.service-desc-content blockquote {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0.5rem auto;
+}
+
+.service-desc-content {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+}
