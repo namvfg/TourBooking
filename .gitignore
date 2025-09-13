@@ -27,8 +27,6 @@ replay_pid*
 # Thư mục node_modules (bắt buộc phải ignore)
 node_modules/
 
-# Thư mục build (sinh ra khi build production)
-build/
 
 # File môi trường (chứa API key, secret, config)
 .env
