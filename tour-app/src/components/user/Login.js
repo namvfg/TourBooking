@@ -57,7 +57,7 @@ const Login = () => {
                 }
             }
 
-            dispatch({ type: "login", payload: { ...profileData, token } });
+            dispatch({ type: "login", payload: profileData });
             toast.success("Đăng nhập thành công!");
             navigate("/");
         } catch (err) {

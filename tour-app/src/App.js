@@ -46,7 +46,7 @@ const App = () => {
           }
         }
 
-        dispatch({ type: "login", payload: { ...userData, token } });
+        dispatch({ type: "login", payload: userData });
       } catch (error) {
         console.error("Failed to fetch user profile with stored token:", error);
         dispatch({ type: "logout" });
