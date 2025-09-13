@@ -21,6 +21,7 @@ import Unauthorized from './components/others/Unauthorized';
 import ServicePostList from "./components/ServicePostList";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ServicePostDetail from './components/provider/ServicePostDetail';
+import AddServicePost from "./components/provider/AddServicePost";
 
 const App = () => {
 
@@ -81,6 +82,7 @@ const App = () => {
                 <Route path="/unauthorized" element={<Unauthorized />} />
                 <Route path="/service-posts" element={<ServicePostList />} />
                 <Route path="/service-post/:id" element={<ServicePostDetail />} />
+                <Route path="/add-service-post" element={<AddServicePost />} />
 
                 <Route
                   path="/profile"

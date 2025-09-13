@@ -4,20 +4,32 @@ import com.tba.dto.response.ServicePostResponseDTO;
 import com.tba.pojo.ServicePost;
 import com.tba.pojo.ServiceProvider;
 import com.tba.pojo.User;
+import com.tba.pojo.Room;
+import com.tba.pojo.Tour;
+import com.tba.pojo.Transportation;
 import com.tba.enums.ServiceType;
 import com.tba.enums.UserRole;
 import com.tba.services.ServicePostService;
 import com.tba.services.ServiceProviderService;
 import com.tba.services.UserService;
+import com.tba.services.RoomService;
+import com.tba.services.TourService;
+import com.tba.services.TransportationService;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.tba.enums.State;
+import com.tba.pojo.ServicePermission;
+import com.tba.services.ServicePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,12 +48,23 @@ public class ApiServicePostController {
     private ServiceProviderService serviceProviderService;
 
     @Autowired
+    private ServicePermissionService permissionService;
+    
+    @Autowired
     private UserService userService;
+
+    @Autowired
+    private RoomService roomService;
+
+    @Autowired
+    private TourService tourService;
+
+    @Autowired
+    private TransportationService transportationService;
 
     @Autowired
     private Cloudinary cloudinary;
 
-    // API: Lấy danh sách giá trị enum ServiceType cho frontend dropdown
     @GetMapping("/service-types")
     public ResponseEntity<List<String>> getServiceTypes() {
         List<String> types = Arrays.stream(ServiceType.values())
@@ -50,7 +73,6 @@ public class ApiServicePostController {
         return ResponseEntity.ok(types);
     }
 
-    // USER & PROVIDER: Lấy danh sách bài đăng, hỗ trợ phân trang
     @GetMapping(value = "/service-post/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAllServicePostsPaged(
             @RequestParam(name = "page", defaultValue = "0") Integer page,
@@ -68,10 +90,9 @@ public class ApiServicePostController {
                         "total", total,
                         "totalPages", totalPages
                 )
-        ); // KHÔNG trả về kiểu String!
+        );
     }
 
-    // USER & PROVIDER: Xem chi tiết một bài đăng
     @GetMapping("/service-post/{id}")
     public ResponseEntity<ServicePostResponseDTO> getServicePostById(@PathVariable("id") Integer id) {
         ServicePost post = servicePostService.getServicePostById(id);
@@ -81,17 +102,23 @@ public class ApiServicePostController {
         return ResponseEntity.ok(toResponseDTO(post));
     }
 
-    // PROVIDER: Thêm bài đăng mới (nhận multipart/form-data, file ảnh)
-    @PostMapping("/secure/service-post/add")
+    @PostMapping(value = "/secure/service-post/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> addServicePost(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("image") MultipartFile image,
-            @RequestParam("price") String price, // nhận price kiểu String
+            @RequestParam("price") String price,
             @RequestParam("availableSlot") Integer availableSlot,
             @RequestParam("address") String address,
             @RequestParam("serviceType") String serviceType,
             @RequestParam("serviceProviderId") Integer serviceProviderId,
+            @RequestParam(value = "roomStartDate", required = false) String roomStartDate,
+            @RequestParam(value = "roomEndDate", required = false) String roomEndDate,
+            @RequestParam(value = "tourStartDate", required = false) String tourStartDate,
+            @RequestParam(value = "tourEndDate", required = false) String tourEndDate,
+            @RequestParam(value = "transportType", required = false) String transportType,
+            @RequestParam(value = "transportStartDate", required = false) String transportStartDate,
+            @RequestParam(value = "destination", required = false) String destination,
             Principal principal) {
 
         User user = userService.getUserByUsername(principal.getName());
@@ -117,9 +144,10 @@ public class ApiServicePostController {
         post.setName(name);
         post.setDescription(description);
         post.setImage(imageUrl);
-        post.setPrice(new java.math.BigDecimal(price)); // chuyển sang BigDecimal
+        post.setPrice(new java.math.BigDecimal(price));
         post.setAvailableSlot(availableSlot);
         post.setAddress(address);
+
         try {
             post.setServiceType(ServiceType.valueOf(serviceType));
         } catch (Exception e) {
@@ -131,10 +159,58 @@ public class ApiServicePostController {
         post.setServiceProviderId(provider);
 
         servicePostService.addServicePost(post);
+
+        // Parse các trường ngày tháng từ FE gửi lên (ISO 8601: yyyy-MM-ddTHH:mm)
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        Date roomStart = null, roomEnd = null, tourStart = null, tourEnd = null, transportStart = null;
+        try {
+            if (roomStartDate != null && !roomStartDate.isEmpty())
+                roomStart = sdf.parse(roomStartDate);
+            if (roomEndDate != null && !roomEndDate.isEmpty())
+                roomEnd = sdf.parse(roomEndDate);
+            if (tourStartDate != null && !tourStartDate.isEmpty())
+                tourStart = sdf.parse(tourStartDate);
+            if (tourEndDate != null && !tourEndDate.isEmpty())
+                tourEnd = sdf.parse(tourEndDate);
+            if (transportStartDate != null && !transportStartDate.isEmpty())
+                transportStart = sdf.parse(transportStartDate);
+        } catch (ParseException e) {
+            return ResponseEntity.badRequest().body("Ngày giờ không đúng định dạng! Định dạng phải là yyyy-MM-dd'T'HH:mm");
+        }
+
+        // Sau khi thêm ServicePost, thêm bản ghi chi tiết theo loại dịch vụ
+        if (post.getId() != null) {
+            switch (post.getServiceType().name()) {
+                case "ROOM":
+                    Room room = new Room();
+                    room.setServicePostId(post.getId());
+                    room.setStartDate(roomStart);
+                    room.setEndDate(roomEnd);
+                    roomService.addRoom(room);
+                    break;
+                case "TOUR":
+                    Tour tour = new Tour();
+                    tour.setServicePostId(post.getId());
+                    tour.setStartDate(tourStart);
+                    tour.setEndDate(tourEnd);
+                    tourService.addTour(tour);
+                    break;
+                case "TRANSPORTATION":
+                    Transportation transportation = new Transportation();
+                    transportation.setServicePostId(post.getId());
+                    transportation.setTransportType(transportType);
+                    transportation.setStartDate(transportStart);
+                    transportation.setDestination(destination);
+                    transportationService.addTransportation(transportation);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         return ResponseEntity.ok(toResponseDTO(post));
     }
 
-    // PROVIDER: Sửa bài đăng
     @PutMapping("/secure/service-post/edit/{id}")
     public ResponseEntity<?> updateServicePost(
             @PathVariable("id") Integer id,
@@ -146,7 +222,7 @@ public class ApiServicePostController {
             @RequestParam("address") String address,
             @RequestParam("serviceType") String serviceType,
             Principal principal) {
-        System.out.println("PRINCIPAL: " + (principal != null ? principal.getName() : "null"));
+
         User user = userService.getUserByUsername(principal.getName());
         if (user == null || user.getRole() != UserRole.PROVIDER) {
             return ResponseEntity.status(403).body("Chỉ nhà cung cấp mới được sửa bài.");
@@ -164,7 +240,6 @@ public class ApiServicePostController {
 
         post.setName(name);
         post.setDescription(description);
-        // Nếu có ảnh mới, upload lên Cloudinary
         if (image != null && !image.isEmpty()) {
             try {
                 Map result = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
@@ -177,6 +252,7 @@ public class ApiServicePostController {
         post.setPrice(new java.math.BigDecimal(price));
         post.setAvailableSlot(availableSlot);
         post.setAddress(address);
+
         try {
             post.setServiceType(ServiceType.valueOf(serviceType));
         } catch (Exception e) {
@@ -188,10 +264,8 @@ public class ApiServicePostController {
         return ResponseEntity.ok(toResponseDTO(post));
     }
 
-    // PROVIDER: Xóa mềm bài đăng
     @DeleteMapping("/secure/service-post/delete/{id}")
     public ResponseEntity<?> deleteServicePost(@PathVariable("id") Integer id, Principal principal) {
-        System.out.println("PRINCIPAL: " + (principal != null ? principal.getName() : "null"));
         User user = userService.getUserByUsername(principal.getName());
         if (user == null || user.getRole() != UserRole.PROVIDER) {
             return ResponseEntity.status(403).body("Chỉ nhà cung cấp mới được xóa bài.");
@@ -211,7 +285,6 @@ public class ApiServicePostController {
         return ResponseEntity.ok().body("Xóa bài đăng thành công!");
     }
 
-    // Hàm chuyển đổi entity sang response DTO
     private ServicePostResponseDTO toResponseDTO(ServicePost post) {
         ServicePostResponseDTO dto = new ServicePostResponseDTO();
         dto.setId(post.getId());
@@ -227,6 +300,37 @@ public class ApiServicePostController {
         dto.setIsDeleted(post.getIsDeleted());
         dto.setServiceProviderId(post.getServiceProviderId().getId());
         dto.setCompanyName(post.getServiceProviderId().getCompanyName());
+
+        // Thêm thông tin chi tiết nếu có
+        if ("ROOM".equals(dto.getServiceType()) && post.getRoom() != null) {
+            dto.setRoomStartDate(post.getRoom().getStartDate());
+            dto.setRoomEndDate(post.getRoom().getEndDate());
+        } else if ("TOUR".equals(dto.getServiceType()) && post.getTour() != null) {
+            dto.setTourStartDate(post.getTour().getStartDate());
+            dto.setTourEndDate(post.getTour().getEndDate());
+        } else if ("TRANSPORTATION".equals(dto.getServiceType()) && post.getTransportation() != null) {
+            dto.setTransportType(post.getTransportation().getTransportType());
+            dto.setTransportStartDate(post.getTransportation().getStartDate());
+            dto.setDestination(post.getTransportation().getDestination());
+        }
         return dto;
+    }
+    
+    @GetMapping("/secure/provider/service-permissions")
+    public ResponseEntity<List<String>> getActiveServiceTypesForProvider(Principal principal) {
+        User user = userService.getUserByUsername(principal.getName());
+        if (user == null || user.getRole() != UserRole.PROVIDER) {
+            return ResponseEntity.status(403).body(Collections.emptyList());
+        }
+        ServiceProvider provider = user.getServiceProvider();
+        if (provider == null) {
+            return ResponseEntity.status(403).body(Collections.emptyList());
+        }
+        List<ServicePermission> perms = permissionService.getPermissionsByProviderId(provider.getId());
+        List<String> allowedTypes = perms.stream()
+            .filter(p -> p.getState() == State.ACTIVE)
+            .map(p -> p.getServiceType().name())
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(allowedTypes);
     }
 }

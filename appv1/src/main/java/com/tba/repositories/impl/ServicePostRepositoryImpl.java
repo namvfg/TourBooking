@@ -19,6 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import com.tba.pojo.Room;
+import com.tba.pojo.Tour;
+import com.tba.pojo.Transportation;
 
 @Repository
 public class ServicePostRepositoryImpl implements ServicePostRepository {
@@ -89,4 +92,6 @@ public class ServicePostRepositoryImpl implements ServicePostRepository {
         cq.select(cb.count(root)).where(cb.equal(root.get("isDeleted"), false));
         return session.createQuery(cq).getSingleResult();
     }
+    
+
 }

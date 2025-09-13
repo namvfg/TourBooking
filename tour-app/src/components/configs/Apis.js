@@ -16,11 +16,12 @@ export const endpoints = {
     "provider-register": "/provider/register",
     "provider-profile": "/secure/provider/profile",
     "provider-request-permission": "/secure/provider/request-permission",
+    "provider-service-permissions": "/secure/provider/service-permissions",
     "provider-check-status": "/secure/provider/check-status",
     "service-post-add": "/secure/service-post/add",
     "service-post-edit": "/secure/service-post/edit",    
     "service-post-delete": "/secure/service-post/delete",
-    "service-post-delete": "/secure/service-post/edit",
+
 
     //enums
     "service-types": "/enums/service-types",
