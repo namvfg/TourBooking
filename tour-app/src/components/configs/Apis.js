@@ -23,7 +23,10 @@ export const endpoints = {
     "service-post-delete": "/secure/service-post/edit",
 
     //enums
-    "service-types": "/enums/service-types"
+    "service-types": "/enums/service-types",
+
+    //upload image cho ckeditor
+    "upload-image": "/secure/upload-image"
 };
 
 export const authApis = (token) => axios.create({
