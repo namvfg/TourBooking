@@ -111,7 +111,7 @@ const AddServicePost = ({ onAdded }) => {
                             editor.editing.view.change((writer) => {
                                 const root = editor.editing.view.document.getRoot();
                                 writer.setStyle("min-height", "400px", root);       
-                                writer.setStyle("max-height", "600px", root);      
+                                writer.setStyle("max-height", "6  00px", root);      
                                 writer.setStyle("overflow-y", "auto", root);      
                                 writer.setStyle("padding", "10px", root);      
                                 writer.setStyle("border", "1px solid #ccc", root); 
