@@ -8,32 +8,42 @@ import { toast } from "react-toastify";
 const Profile = () => {
     const [user] = useContext(MyUserContext);
     const [serviceTypes, setServiceTypes] = useState([]);
-    const [selectedTypes, setSelectedTypes] = useState([]);
+    const [selectedTypes, setSelectedTypes] = useState([]); // để gửi request
+    const [existingPermissions, setExistingPermissions] = useState([]); // quyền ACTIVE đã có
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const fetchServiceTypes = async () => {
+        const fetchData = async () => {
             try {
-                const res = await Apis.get(endpoints["service-types"]);
-                if (Array.isArray(res.data)) {
-                    setServiceTypes(res.data);
+                // lấy danh sách serviceTypes
+                const resTypes = await Apis.get(endpoints["service-types"]);
+                if (Array.isArray(resTypes.data)) {
+                    setServiceTypes(resTypes.data);
                 } else {
-                    console.error("Service types API returned invalid data:", res.data);
                     setServiceTypes([]);
                 }
+
+                // nếu user là provider thì gọi API lấy permission hiện có
+                if (user && user.role === "PROVIDER") {
+                    const token = cookie.load("token");
+                    const resPerms = await authApis(token).get(endpoints["provider-service-permissions"]);
+                    if (Array.isArray(resPerms.data)) {
+                        setExistingPermissions(resPerms.data);
+                    }
+                }
             } catch (err) {
-                console.error("Failed to fetch service types", err);
-                toast.error("Không thể tải danh sách quyền dịch vụ!");
-                setServiceTypes([]);
+                console.error("Fetch error", err);
+                toast.error("Không thể tải dữ liệu quyền dịch vụ!");
             }
         };
-        fetchServiceTypes();
-    }, []);
+
+        fetchData();
+    }, [user]);
 
     const toggleType = (type) => {
-        setSelectedTypes(prev =>
+        setSelectedTypes((prev) =>
             prev.includes(type)
-                ? prev.filter(t => t !== type)
+                ? prev.filter((t) => t !== type)
                 : [...prev, type]
         );
     };
@@ -110,8 +120,9 @@ const Profile = () => {
                                 <h5>Thông tin nhà cung cấp</h5>
                                 <p><strong>Tên công ty:</strong> {user.provider.companyName}</p>
                                 <p><strong>Trạng thái:</strong> {user.provider.state}</p>
-                                <p><strong>Ngày tạo:</strong> {user.provider.providerCreatedAt &&
-                                    new Date(user.provider.providerCreatedAt.replace(" ", "T")).toLocaleDateString()}
+                                <p><strong>Ngày tạo:</strong>{" "}
+                                    {user.provider.providerCreatedAt &&
+                                        new Date(user.provider.providerCreatedAt.replace(" ", "T")).toLocaleDateString()}
                                 </p>
 
                                 <hr />
@@ -121,15 +132,19 @@ const Profile = () => {
                                 </p>
 
                                 {Array.isArray(serviceTypes) && serviceTypes.length > 0 ? (
-                                    serviceTypes.map(type => (
-                                        <Form.Check
-                                            key={type}
-                                            type="checkbox"
-                                            label={type}
-                                            checked={selectedTypes.includes(type)}
-                                            onChange={() => toggleType(type)}
-                                        />
-                                    ))
+                                    serviceTypes.map((type) => {
+                                        const alreadyHas = existingPermissions.includes(type);
+                                        return (
+                                            <Form.Check
+                                                key={type}
+                                                type="checkbox"
+                                                label={type}
+                                                checked={alreadyHas || selectedTypes.includes(type)}
+                                                disabled={alreadyHas} // readonly nếu đã có quyền
+                                                onChange={() => toggleType(type)}
+                                            />
+                                        );
+                                    })
                                 ) : (
                                     <p className="text-muted">Không có loại dịch vụ nào để chọn</p>
                                 )}

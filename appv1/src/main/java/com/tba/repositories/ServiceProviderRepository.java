@@ -25,4 +25,6 @@ public interface ServiceProviderRepository {
     void updateProvider(ServiceProvider provider);
 
     ServiceProvider getProviderById(Integer id);
+    
+    boolean existsByCompanyName(String companyName);
 }

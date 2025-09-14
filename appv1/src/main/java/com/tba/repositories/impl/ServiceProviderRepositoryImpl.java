@@ -77,4 +77,20 @@ public class ServiceProviderRepositoryImpl implements ServiceProviderRepository 
         Session session = this.factory.getObject().getCurrentSession();
         return session.get(ServiceProvider.class, id);
     }
+
+    @Override
+    public boolean existsByCompanyName(String companyName) {
+        if (companyName == null || companyName.trim().isEmpty()) {
+            return false;
+        }
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<ServiceProvider> root = cq.from(ServiceProvider.class);
+        cq.select(cb.count(root));
+        cq.where(cb.equal(cb.lower(root.get("companyName")), companyName.toLowerCase()));
+
+        Long count = session.createQuery(cq).getSingleResult();
+        return count != null && count > 0;
+    }
 }

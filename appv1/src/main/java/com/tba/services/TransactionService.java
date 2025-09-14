@@ -15,4 +15,8 @@ public interface TransactionService {
     List<Transaction> getAllTransactions();
     
     void deleteTransaction(Integer id);
+    
+    void add(Transaction transaction);
+    
+    void update(Transaction transaction);
 }
