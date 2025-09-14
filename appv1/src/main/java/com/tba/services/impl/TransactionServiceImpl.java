@@ -32,4 +32,14 @@ public class TransactionServiceImpl implements TransactionService {
     public void deleteTransaction(Integer id) {
         transactionRepository.deleteTransaction(id);
     }
+
+    @Override
+    public void add(Transaction transaction) {
+        this.transactionRepository.add(transaction);
+    }
+
+    @Override
+    public void update(Transaction transaction) {
+        this.transactionRepository.update(transaction);
+    }
 }

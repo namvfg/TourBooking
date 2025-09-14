@@ -59,4 +59,9 @@ public class ServiceProviderServiceImpl implements ServiceProviderService {
     public ServiceProvider getProviderById(Integer id) {
         return serviceProviderRepository.getProviderById(id);
     }
+
+    @Override
+    public boolean existsByCompanyName(String companyName) {
+        return this.serviceProviderRepository.existsByCompanyName(companyName);
+    }
 }

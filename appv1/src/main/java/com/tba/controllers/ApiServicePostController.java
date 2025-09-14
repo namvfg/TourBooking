@@ -19,6 +19,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.tba.enums.State;
 import com.tba.pojo.ServicePermission;
+import com.tba.services.CloudinaryService;
 import com.tba.services.ServicePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -63,15 +63,7 @@ public class ApiServicePostController {
     private TransportationService transportationService;
 
     @Autowired
-    private Cloudinary cloudinary;
-
-    @GetMapping("/service-types")
-    public ResponseEntity<List<String>> getServiceTypes() {
-        List<String> types = Arrays.stream(ServiceType.values())
-                .map(Enum::name)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(types);
-    }
+    private CloudinaryService cloudinaryService;
 
     @GetMapping(value = "/service-post/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAllServicePostsPaged(
@@ -131,11 +123,10 @@ public class ApiServicePostController {
             return ResponseEntity.status(403).body("Bạn không có quyền đăng bài cho provider này.");
         }
 
-        // UPLOAD ẢNH LÊN CLOUDINARY
-        String imageUrl = null;
+        String imageUrl;
         try {
-            Map result = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-            imageUrl = (String) result.get("secure_url");
+           imageUrl = cloudinaryService.uploadImage(image, "service-post")
+                        .get("secure_url").toString();
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Lỗi upload ảnh dịch vụ!");
         }
@@ -160,7 +151,6 @@ public class ApiServicePostController {
 
         servicePostService.addServicePost(post);
 
-        // Parse các trường ngày tháng từ FE gửi lên (ISO 8601: yyyy-MM-ddTHH:mm)
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
         Date roomStart = null, roomEnd = null, tourStart = null, tourEnd = null, transportStart = null;
         try {
@@ -242,8 +232,8 @@ public class ApiServicePostController {
         post.setDescription(description);
         if (image != null && !image.isEmpty()) {
             try {
-                Map result = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-                String imageUrl = (String) result.get("secure_url");
+                String imageUrl = cloudinaryService.uploadImage(image, "service-post")
+                        .get("secure_url").toString();
                 post.setImage(imageUrl);
             } catch (Exception e) {
                 return ResponseEntity.status(500).body("Lỗi upload ảnh dịch vụ!");

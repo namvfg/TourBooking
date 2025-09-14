@@ -59,9 +59,36 @@ public class ApiServiceProviderController {
     @PostMapping("/provider/register")
     public ResponseEntity<?> registerProvider(@Valid @ModelAttribute ProviderRegisterRequestDTO dto) {
         try {
+            if (userService.existsByUsername(dto.getUsername())) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "error", "Tên đăng nhập đã tồn tại!"
+                ));
+            }
+            if (userService.existsByEmail(dto.getEmail())) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "error", "Email đã được sử dụng!"
+                ));
+            }
+            if (userService.existsByPhoneNumber(dto.getPhoneNumber())) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "error", "Số điện thoại đã được sử dụng!"
+                ));
+            }
+
+            if (providerService.existsByCompanyName(dto.getCompanyName())) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "error", "Tên công ty đã tồn tại trong hệ thống!"
+                ));
+            }
+
             String imageUrl;
             try {
-                imageUrl = cloudinaryService.uploadImage(dto.getAvatar(), "avatar").get("secure_url").toString();
+                imageUrl = cloudinaryService.uploadImage(dto.getAvatar(), "avatar")
+                        .get("secure_url").toString();
             } catch (Exception ex) {
                 return ResponseEntity.internalServerError().body(Map.of("error", "Lỗi upload ảnh"));
             }
@@ -72,10 +99,10 @@ public class ApiServiceProviderController {
             user.setEmail(dto.getEmail());
             user.setAddress(dto.getAddress());
             user.setUsername(dto.getUsername());
-            user.setPassword(dto.getPassword());
+            user.setPassword(dto.getPassword()); 
             user.setPhoneNumber(dto.getPhoneNumber());
             user.setAvatar(imageUrl);
-            user.setRole(UserRole.PROVIDER); // set role là PROVIDER
+            user.setRole(UserRole.PROVIDER); 
             user.setCreatedAt(new Date());
             user.setUpdatedAt(new Date());
 
@@ -90,13 +117,14 @@ public class ApiServiceProviderController {
             this.providerService.addProvider(user, provider);
 
             System.out.println("User ID sau khi lưu: " + user.getId());
+
             emailService.sendProviderPending(user.getEmail(), provider.getCompanyName());
+
             return ResponseEntity.ok(Map.of(
                     "success", true,
                     "id", user.getId(),
                     "message", "Đăng ký nhà cung cấp thành công!"
             ));
-
         } catch (Exception ex) {
             ex.printStackTrace();
             System.err.println("Lỗi thực tế: " + ex.getClass() + " - " + ex.getMessage());
@@ -106,18 +134,23 @@ public class ApiServiceProviderController {
     }
 
     @GetMapping("secure/provider/profile")
-    public ResponseEntity<ServiceProviderResponseDTO> getProviderProfile(Principal principal) {
+    public ResponseEntity<?> getProviderProfile(Principal principal) {
         // Lấy user hiện tại
         User u = this.userService.getUserByUsername(principal.getName());
 
-        // Lấy service provider gắn với user
         ServiceProvider sp = u.getServiceProvider();
 
         if (sp == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body("Tài khoản không phải là nhà cung cấp dịch vụ!");
+        }
+        if (sp.getState() == State.PENDING) {
+            return ResponseEntity.badRequest().body("Tài khoản đang chờ duyệt!");
         }
 
-        // Map sang DTO
+        if (sp.getState() == State.DISABLED) {
+            return ResponseEntity.badRequest().body("Tài khoản đã bị khóa!");
+        }
+
         ServiceProviderResponseDTO res = new ServiceProviderResponseDTO(
                 sp.getId(),
                 sp.getCompanyName(),
@@ -139,6 +172,14 @@ public class ApiServiceProviderController {
 
         if (provider == null) {
             return ResponseEntity.badRequest().body("Tài khoản không phải là nhà cung cấp dịch vụ!");
+        }
+
+        if (provider.getState() == State.PENDING) {
+            return ResponseEntity.badRequest().body("Tài khoản đang chờ duyệt!");
+        }
+
+        if (provider.getState() == State.DISABLED) {
+            return ResponseEntity.badRequest().body("Tài khoản đã bị khóa!");
         }
 
         Date now = new Date();

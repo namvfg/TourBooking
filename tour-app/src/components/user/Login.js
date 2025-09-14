@@ -27,8 +27,6 @@ const Login = () => {
                 return;
             }
 
-            cookie.save("token", token, { path: "/" });
-
             const profileRes = await authApis(token).get(endpoints["profile"]);
             let profileData = profileRes.data;
 
@@ -56,7 +54,7 @@ const Login = () => {
                     console.error("Failed to fetch provider profile:", err);
                 }
             }
-
+            cookie.save("token", token, { path: "/" });
             dispatch({ type: "login", payload: profileData });
             toast.success("Đăng nhập thành công!");
             navigate("/");

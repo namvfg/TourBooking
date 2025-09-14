@@ -67,12 +67,31 @@ public class ApiUserController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @ModelAttribute UserRegisterRequestDTO dto) {
         try {
-
+            if (userService.existsByUsername(dto.getUsername())) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "error", "Tên đăng nhập đã tồn tại!"
+                ));
+            }
+            if (userService.existsByEmail(dto.getEmail())) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "error", "Email đã được sử dụng!"
+                ));
+            }
+            if (userService.existsByPhoneNumber(dto.getPhoneNumber())) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "error", "Số điện thoại đã được sử dụng!"
+                ));
+            }
+            
             String imageUrl;
             try {
-                imageUrl = cloudinaryService.uploadImage(dto.getAvatar(), "avatar").get("secure_url").toString();
+                imageUrl = cloudinaryService.uploadImage(dto.getAvatar(), "avatar")
+                        .get("secure_url").toString();
             } catch (Exception ex) {
-                return ResponseEntity.internalServerError().body(Map.of("error", "Lỗi up ảnh"));
+                return ResponseEntity.internalServerError().body(Map.of("error", "Lỗi upload ảnh"));
             }
 
             User user = new User();
@@ -81,7 +100,7 @@ public class ApiUserController {
             user.setEmail(dto.getEmail());
             user.setAddress(dto.getAddress());
             user.setUsername(dto.getUsername());
-            user.setPassword(dto.getPassword());
+            user.setPassword(dto.getPassword()); // cần mã hóa trước khi lưu
             user.setPhoneNumber(dto.getPhoneNumber());
             user.setAvatar(imageUrl);
             user.setRole(UserRole.USER); // default role
@@ -92,10 +111,9 @@ public class ApiUserController {
 
             return ResponseEntity.ok(Map.of(
                     "success", true,
-                    "id", user.getId(), 
+                    "id", user.getId(),
                     "message", "Đăng ký người dùng thành công!"
             ));
-
         } catch (Exception ex) {
             ex.printStackTrace();
             return ResponseEntity.internalServerError()

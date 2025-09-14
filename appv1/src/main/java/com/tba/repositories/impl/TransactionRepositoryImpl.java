@@ -37,12 +37,26 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
-    @Transactional
     public void deleteTransaction(Integer id) {
         Session session = this.factory.getObject().getCurrentSession();
         Transaction transaction = session.get(Transaction.class, id);
         if (transaction != null) {
             session.delete(transaction);
         }
+    }
+
+    @Override
+    public void add(Transaction transaction) {
+        Session s = this.factory.getObject().getCurrentSession();
+        if (transaction.getId() != null) {
+            throw new IllegalArgumentException("ID must not be set manually when using GenerationType.IDENTITY");
+        }
+        s.persist(transaction);
+    }
+
+    @Override
+    public void update(Transaction transaction) {
+        Session s = this.factory.getObject().getCurrentSession();
+        s.merge(transaction);
     }
 }
