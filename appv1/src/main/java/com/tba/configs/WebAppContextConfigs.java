@@ -26,7 +26,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan(basePackages = {
     "com.tba.controllers",
     "com.tba.services",
-    "com.tba.repositories"
+    "com.tba.repositories",
+    "Com.tba.components"
 
 })
 public class WebAppContextConfigs implements WebMvcConfigurer {

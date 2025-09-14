@@ -8,8 +8,10 @@ package com.tba.services.impl;
  *
  * @author HP Zbook 15
  */
+import com.tba.pojo.ServicePost;
 import com.tba.pojo.Transaction;
 import com.tba.repositories.TransactionRepository;
+import com.tba.services.ServicePostService;
 import com.tba.services.TransactionService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
+    
+    @Autowired
+    private ServicePostService servicePostService;
 
     @Override
     public List<Transaction> getAllTransactions() {
@@ -39,7 +44,13 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void update(Transaction transaction) {
+    public void update(ServicePost servicePost, Transaction transaction) {
+        this.servicePostService.updateServicePost(servicePost);
         this.transactionRepository.update(transaction);
+    }
+
+    @Override
+    public Transaction getTransactionByTransactionCode(String transactionCode) {
+        return this.transactionRepository.getTransactionByTransactionCode(transactionCode);
     }
 }

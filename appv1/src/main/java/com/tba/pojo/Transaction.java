@@ -66,6 +66,10 @@ public class Transaction implements Serializable {
     private BigDecimal totalAmount;
     @Basic(optional = false)
     @NotNull
+    @Column(name = "transaction_code", unique = true, length = 100)
+    private String transactionCode;
+    @Basic(optional = false)
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
@@ -199,5 +203,19 @@ public class Transaction implements Serializable {
     public String toString() {
         return "com.tba.pojo.Transaction[ id=" + id + " ]";
     }
-    
+
+    /**
+     * @return the transactionCode
+     */
+    public String getTransactionCode() {
+        return transactionCode;
+    }
+
+    /**
+     * @param transactionCode the transactionCode to set
+     */
+    public void setTransactionCode(String transactionCode) {
+        this.transactionCode = transactionCode;
+    }
+
 }

@@ -19,4 +19,6 @@ public interface TransactionRepository {
     void add(Transaction transaction);
     
     void update(Transaction transaction);
+    
+    Transaction getTransactionByTransactionCode(String transactionCode);
 }

@@ -38,7 +38,8 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
     "com.tba.controllers",
     "com.tba.repositories",
     "com.tba.services",
-    "com.tba.filters",})
+    "com.tba.filters",
+    "com.tba.components"})
 public class SpringSecurityConfigs {
 
     @Autowired
@@ -79,6 +80,7 @@ public class SpringSecurityConfigs {
                 .requestMatchers(HttpMethod.PUT, "/api/secure/service-post/**").hasAuthority("PROVIDER")
                 .requestMatchers("/api/secure/**").authenticated()
                 .requestMatchers("/api/enums/**").permitAll()
+                .requestMatchers("/api/momo-return").permitAll()
                 .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

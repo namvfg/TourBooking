@@ -22,6 +22,8 @@ import ServicePostList from "./components/ServicePostList";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ServicePostDetail from './components/provider/ServicePostDetail';
 import AddServicePost from "./components/provider/AddServicePost";
+import Payment from './components/user/Payment';
+import PaymentReturn from './components/user/PaymentReturn';
 
 const App = () => {
 
@@ -82,7 +84,33 @@ const App = () => {
                 <Route path="/unauthorized" element={<Unauthorized />} />
                 <Route path="/service-posts" element={<ServicePostList />} />
                 <Route path="/service-post/:id" element={<ServicePostDetail />} />
-                <Route path="/add-service-post" element={<AddServicePost />} />
+
+                <Route
+                  path="/add-service-post"
+                  element={
+                    <ProtectedRoute allowedRoles={["PROVIDER"]} user={user}>
+                      <AddServicePost />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/payment"
+                  element={
+                    <ProtectedRoute allowedRoles={["USER"]} user={user}>
+                      <Payment />
+                    </ProtectedRoute>
+                  }
+                />
+
+                  <Route
+                  path="/payment-return"
+                  element={
+                    <ProtectedRoute allowedRoles={["USER"]} user={user}>
+                      <PaymentReturn />
+                    </ProtectedRoute>
+                  }
+                />
 
                 <Route
                   path="/profile"

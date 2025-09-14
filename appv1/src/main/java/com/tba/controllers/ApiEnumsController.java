@@ -5,6 +5,7 @@
 package com.tba.controllers;
 
 import com.tba.enums.ServiceType;
+import com.tba.enums.TransactionType;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,14 @@ public class ApiEnumsController {
     @GetMapping("/enums/service-types")
     public ResponseEntity<List<String>> getServiceTypes() {
         List<String> types = Arrays.stream(ServiceType.values())
+                .map(Enum::name)
+                .toList();
+        return ResponseEntity.ok(types);
+    }
+    
+    @GetMapping("/enums/transaction-types")
+    public ResponseEntity<List<String>> getTransactionTypes() {
+        List<String> types = Arrays.stream(TransactionType.values())
                 .map(Enum::name)
                 .toList();
         return ResponseEntity.ok(types);

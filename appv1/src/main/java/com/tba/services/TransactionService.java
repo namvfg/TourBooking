@@ -8,6 +8,7 @@ package com.tba.services;
  *
  * @author HP Zbook 15
  */
+import com.tba.pojo.ServicePost;
 import com.tba.pojo.Transaction;
 import java.util.List;
 
@@ -18,5 +19,7 @@ public interface TransactionService {
     
     void add(Transaction transaction);
     
-    void update(Transaction transaction);
+    void update(ServicePost servicePost, Transaction transaction);
+    
+    Transaction getTransactionByTransactionCode(String transactionCode);
 }
