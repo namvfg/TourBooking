@@ -7,6 +7,7 @@ import CustomEditor from '../../ckeditor/build/ckeditor';
 import { UploadAdapterPlugin } from "../layout/CustomUploadAdapter";
 import cookies from 'react-cookies';
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const TRANSPORT_ENUMS = [
     { value: "BUS", label: "Xe Bus" },
@@ -28,7 +29,7 @@ const AddServicePost = () => {
     const [loading, setLoading] = useState(false);
     const [serviceTypeOptions, setServiceTypeOptions] = useState([]);
 
-    // Thêm các trường chi tiết động
+    // Trường chi tiết động
     const [roomStartDate, setRoomStartDate] = useState("");
     const [roomEndDate, setRoomEndDate] = useState("");
     const [tourStartDate, setTourStartDate] = useState("");
@@ -75,13 +76,10 @@ const AddServicePost = () => {
         if (!serviceType) return setErr("Vui lòng chọn loại dịch vụ!");
         if (!providerId || isNaN(providerId)) return setErr("Provider không hợp lệ!");
 
-        // Validate các trường động theo loại dịch vụ
         if (serviceType === "ROOM") {
             if (!roomStartDate) return setErr("Vui lòng chọn ngày bắt đầu phòng!");
-            // roomEndDate có thể null
         } else if (serviceType === "TOUR") {
             if (!tourStartDate) return setErr("Vui lòng chọn ngày bắt đầu tour!");
-            // tourEndDate có thể null
         } else if (serviceType === "TRANSPORTATION") {
             if (!transportType) return setErr("Vui lòng chọn loại phương tiện!");
             if (!transportStartDate) return setErr("Vui lòng chọn ngày khởi hành!");
@@ -114,19 +112,20 @@ const AddServicePost = () => {
                 formData.append("destination", destination);
             }
 
-            await authApis(token).post(endpoints["service-post-add"], formData, {
+            const res = await authApis(token).post(endpoints["service-post-add"], formData, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
+            console.log("Thêm dịch vụ thành công:", res.data)
+
+            toast.success("Thêm dịch vụ thành công!");
 
             setSuccess("Thêm dịch vụ thành công!");
             setName(""); setDescription(""); setImageFile(null); setPrice(""); setAvailableSlot(""); setAddress(""); setServiceType("");
 
-            // Reset các trường detail
             setRoomStartDate(""); setRoomEndDate("");
             setTourStartDate(""); setTourEndDate("");
             setTransportType(""); setTransportStartDate(""); setDestination("");
 
-            // Chuyển về trang chủ sau khi thêm thành công
             setTimeout(() => {
                 navigate("/");
             }, 1200);
@@ -137,6 +136,7 @@ const AddServicePost = () => {
             else if (error.response?.data)
                 msg = error.response.data;
             setErr(msg);
+            toast.error(msg); // Thông báo thất bại
         } finally {
             setLoading(false);
         }
@@ -179,7 +179,6 @@ const AddServicePost = () => {
                     <Form.Control type="file" accept="image/*" onChange={handleFileChange} required />
                     {imageFile && (
                         <div className="mt-2">
-                            <span>Đã chọn: <b>{imageFile.name}</b></span>
                             <img
                                 src={URL.createObjectURL(imageFile)}
                                 alt="Preview"
@@ -191,7 +190,17 @@ const AddServicePost = () => {
 
                 <Form.Group className="mb-3">
                     <Form.Label>Giá (VNĐ)</Form.Label>
-                    <Form.Control type="number" value={price} onChange={e => setPrice(e.target.value)} required />
+                    <Form.Control
+                        type="number"
+                        value={price}
+                        onChange={e => setPrice(e.target.value)}
+                        required
+                    />
+                    {price && (
+                        <div className="mt-2 text-success fw-bold">
+                            {Number(price).toLocaleString('vi-VN')} VNĐ
+                        </div>
+                    )}
                 </Form.Group>
 
                 <Form.Group className="mb-3">

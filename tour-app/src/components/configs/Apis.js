@@ -11,6 +11,7 @@ export const endpoints = {
     //user
     "register": "/register",
     "profile": "/secure/profile",
+    "service-post-search": "/service-post/search",
 
     //provider
     "provider-register": "/provider/register",

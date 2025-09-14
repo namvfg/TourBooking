@@ -12,6 +12,7 @@ import com.tba.pojo.ServicePost;
 import com.tba.repositories.ServicePostRepository;
 import com.tba.services.ServicePostService;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +25,8 @@ public class ServicePostServiceImpl implements ServicePostService {
     private ServicePostRepository servicePostRepository;
 
     @Override
-    public List<ServicePost> getAllServicePosts() {
-        return servicePostRepository.getAllServicePosts();
+    public List<ServicePost> getServicePosts(Map<String, String> params) {
+        return servicePostRepository.getServicePosts(params);
     }
 
     @Override
@@ -56,5 +57,10 @@ public class ServicePostServiceImpl implements ServicePostService {
     @Override
     public long countServicePosts() {
         return servicePostRepository.countServicePosts();
+    }
+    
+    @Override
+    public long countServicePostsWithFilters(Map<String, String> params) {
+        return servicePostRepository.countServicePostsWithFilters(params);
     }
 }

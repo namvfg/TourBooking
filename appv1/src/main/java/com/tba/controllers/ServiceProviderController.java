@@ -1,9 +1,9 @@
 package com.tba.controllers;
+
 /**
  *
  * @author HP Zbook 15
  */
-
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import com.tba.pojo.ServiceProvider;
 import com.tba.pojo.User;
 import com.tba.services.ServiceProviderService;
 import com.tba.services.UserService;
-
+import com.tba.services.EmailService;
 import jakarta.validation.Valid;
 
 @Controller
@@ -31,6 +31,9 @@ public class ServiceProviderController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping("/providers")
     public String listProviders(Model model) {
@@ -65,6 +68,13 @@ public class ServiceProviderController {
 
         provider.setUpdatedAt(new java.util.Date());
         serviceProviderService.updateProvider(provider);
+
+        if (provider.getState() == State.ACTIVE && old.getState() != State.ACTIVE) {
+            String to = provider.getUserId().getEmail();
+            String companyName = provider.getCompanyName();
+            emailService.sendProviderApproved(to, companyName);
+        }
+
         return "redirect:/providers";
     }
 }
