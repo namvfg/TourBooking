@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import axios, { endpoints } from "./configs/Apis";
 import { Card, Row, Col, Spinner, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { MyUserContext } from "./configs/Context";
 
 const ServicePostList = ({ reloadCount = 0 }) => {
     const [posts, setPosts] = useState([]);
@@ -14,11 +13,26 @@ const ServicePostList = ({ reloadCount = 0 }) => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
+  
+    const [keyword, setKeyword] = useState("");
+    const [serviceType, setServiceType] = useState("");
+    const [minPrice, setMinPrice] = useState("");
+    const [maxPrice, setMaxPrice] = useState("");
+
+    
     const loadPosts = async (p = 0) => {
         setLoading(true);
         setError("");
         try {
-            const url = `${endpoints["service-post-list"]}?page=${p}&size=${size}`;
+            let params = [];
+            if (keyword) params.push(`keyword=${encodeURIComponent(keyword)}`);
+            if (serviceType) params.push(`serviceType=${encodeURIComponent(serviceType)}`);
+            if (minPrice) params.push(`minPrice=${minPrice}`);
+            if (maxPrice) params.push(`maxPrice=${maxPrice}`);
+            params.push(`page=${p}`);
+            params.push(`size=${size}`);
+            const url = `${endpoints["service-post-search"]}?${params.join("&")}`;
+
             const res = await axios.get(url);
 
             let apiData = res.data;
@@ -48,8 +62,7 @@ const ServicePostList = ({ reloadCount = 0 }) => {
                 return;
             }
 
-            const postList = apiData.data;
-            setPosts(postList);
+            setPosts(apiData.data);
             setPage(apiData.page ?? 0);
             setSize(apiData.size ?? 8);
             setTotalPages(apiData.totalPages ?? 1);
@@ -65,16 +78,61 @@ const ServicePostList = ({ reloadCount = 0 }) => {
         setLoading(false);
     };
 
+
     useEffect(() => {
         loadPosts(page);
-        // eslint-disable-next-line
-    }, [page, size, reloadCount]);
+    }, [page, size, reloadCount, keyword, serviceType, minPrice, maxPrice]);
 
     const handlePrev = () => { if (page > 0) setPage(page - 1); };
     const handleNext = () => { if (page < totalPages - 1) setPage(page + 1); };
 
+    const handleSearch = () => {
+        setPage(0); 
+        loadPosts(0);
+    };
+
     return (
         <div>
+            <div className="d-flex gap-2 my-3 flex-wrap">
+                <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Tìm tên dịch vụ..."
+                    value={keyword}
+                    onChange={e => setKeyword(e.target.value)}
+                    style={{ maxWidth: "220px" }}
+                />
+                <select
+                    className="form-select"
+                    value={serviceType}
+                    onChange={e => setServiceType(e.target.value)}
+                    style={{ maxWidth: "140px" }}
+                >
+                    <option value="">Tất cả loại</option>
+                    <option value="ROOM">Phòng</option>
+                    <option value="TOUR">Tour</option>
+                    <option value="TRANSPORTATION">Phương tiện</option>
+                </select>
+                <input
+                    type="number"
+                    className="form-control"
+                    placeholder="Giá tối thiểu"
+                    value={minPrice}
+                    onChange={e => setMinPrice(e.target.value)}
+                    style={{ maxWidth: "150px" }}
+                />
+                <input
+                    type="number"
+                    className="form-control"
+                    placeholder="Giá tối đa"
+                    value={maxPrice}
+                    onChange={e => setMaxPrice(e.target.value)}
+                    style={{ maxWidth: "150px" }}
+                />
+                <button className="btn btn-primary" onClick={handleSearch}>
+                    Tìm kiếm
+                </button>
+            </div>
             <h2 className="mb-4" style={{ fontWeight: "bold" }}>
                 🛎️ Danh sách dịch vụ <span style={{ color: "#007bff" }}>({total} dịch vụ)</span>
             </h2>
@@ -95,11 +153,9 @@ const ServicePostList = ({ reloadCount = 0 }) => {
                                 >
                                     {p.image && <Card.Img variant="top" src={p.image} style={{ objectFit: "cover", height: "160px" }} />}
                                     <Card.Body>
-                                        {/* Tên nhà cung cấp nổi bật */}
                                         <Card.Title style={{ color: "#0d6efd", fontWeight: "bold", fontSize: "1.2rem" }}>
                                             {p.companyName}
                                         </Card.Title>
-                                        {/* Tên dịch vụ nổi bật dưới */}
                                         <Card.Title style={{ fontWeight: "bold", fontSize: "1.5rem" }}>
                                             {p.name}
                                         </Card.Title>

@@ -31,6 +31,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -65,6 +66,7 @@ public class ApiServicePostController {
     @Autowired
     private CloudinaryService cloudinaryService;
 
+
     @GetMapping(value = "/service-post/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAllServicePostsPaged(
             @RequestParam(name = "page", defaultValue = "0") Integer page,
@@ -85,6 +87,38 @@ public class ApiServicePostController {
         );
     }
 
+
+@GetMapping("/service-post/search")
+public ResponseEntity<?> searchServicePosts(
+    @RequestParam Map<String, String> params,
+    @RequestParam(name = "page", defaultValue = "0") Integer page,
+    @RequestParam(name = "size", defaultValue = "10") Integer size
+) {
+    params.put("page", String.valueOf(page));
+    params.put("size", String.valueOf(size));
+
+    List<ServicePost> posts = servicePostService.getServicePosts(params);
+    List<ServicePostResponseDTO> result = posts.stream()
+        .map(this::toResponseDTO)
+        .collect(Collectors.toList());
+
+    // Lấy tổng bản ghi đúng filter
+    Map<String, String> filterParams = new HashMap<>(params);
+    filterParams.remove("page");
+    filterParams.remove("size");
+    long total = servicePostService.countServicePostsWithFilters(filterParams);
+    int totalPages = (int) Math.ceil((double) total / size);
+
+    return ResponseEntity.ok(
+        Map.of(
+            "data", result,
+            "page", page,
+            "size", size,
+            "total", total,
+            "totalPages", totalPages
+        )
+    );
+}
     @GetMapping("/service-post/{id}")
     public ResponseEntity<ServicePostResponseDTO> getServicePostById(@PathVariable("id") Integer id) {
         ServicePost post = servicePostService.getServicePostById(id);
@@ -149,7 +183,6 @@ public class ApiServicePostController {
         post.setIsDeleted(false);
         post.setServiceProviderId(provider);
 
-        servicePostService.addServicePost(post);
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
         Date roomStart = null, roomEnd = null, tourStart = null, tourEnd = null, transportStart = null;
@@ -169,34 +202,31 @@ public class ApiServicePostController {
         }
 
         // Sau khi thêm ServicePost, thêm bản ghi chi tiết theo loại dịch vụ
-        if (post.getId() != null) {
+       
             switch (post.getServiceType().name()) {
                 case "ROOM":
                     Room room = new Room();
-                    room.setServicePostId(post.getId());
                     room.setStartDate(roomStart);
                     room.setEndDate(roomEnd);
-                    roomService.addRoom(room);
+                    roomService.addRoom(post,room);
                     break;
                 case "TOUR":
                     Tour tour = new Tour();
-                    tour.setServicePostId(post.getId());
                     tour.setStartDate(tourStart);
                     tour.setEndDate(tourEnd);
-                    tourService.addTour(tour);
+                    tourService.addTour(post,tour);
                     break;
                 case "TRANSPORTATION":
                     Transportation transportation = new Transportation();
-                    transportation.setServicePostId(post.getId());
                     transportation.setTransportType(transportType);
                     transportation.setStartDate(transportStart);
                     transportation.setDestination(destination);
-                    transportationService.addTransportation(transportation);
+                    transportationService.addTransportation(post,transportation);
                     break;
                 default:
                     break;
             }
-        }
+        
 
         return ResponseEntity.ok(toResponseDTO(post));
     }
