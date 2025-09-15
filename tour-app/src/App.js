@@ -22,6 +22,7 @@ import ServicePostList from "./components/ServicePostList";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ServicePostDetail from './components/provider/ServicePostDetail';
 import AddServicePost from "./components/provider/AddServicePost";
+import ProviderDetail from './components/provider/ProviderDetail';
 
 const App = () => {
 
@@ -83,6 +84,7 @@ const App = () => {
                 <Route path="/service-posts" element={<ServicePostList />} />
                 <Route path="/service-post/:id" element={<ServicePostDetail />} />
                 <Route path="/add-service-post" element={<AddServicePost />} />
+                <Route path="/provider/:providerId" element={<ProviderDetail />} />
 
                 <Route
                   path="/profile"

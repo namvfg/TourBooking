@@ -31,6 +31,9 @@ public interface ServicePostRepository {
     
     long countServicePostsWithFilters(Map<String, String> params);
     
+    List<ServicePost> getServicePostsByProviderIdPaged(int providerId, int page, int size);
+    long countServicePostsByProviderId(int providerId);
+    
 }
 
 

@@ -4,17 +4,21 @@
  */
 package com.tba.controllers;
 
+import com.tba.dto.request.ProviderRatingRequestDTO;
 import com.tba.dto.request.ProviderRegisterRequestDTO;
 import com.tba.dto.request.ServicePermissionRequestDTO;
+import com.tba.dto.response.ProviderRatingResponseDTO;
 import com.tba.dto.response.ServiceProviderResponseDTO;
 import com.tba.enums.ServiceType;
 import com.tba.enums.State;
 import com.tba.enums.UserRole;
+import com.tba.pojo.ProviderRating;
 import com.tba.pojo.ServicePermission;
 import com.tba.pojo.ServiceProvider;
 import com.tba.pojo.User;
 import com.tba.services.CloudinaryService;
 import com.tba.services.EmailService;
+import com.tba.services.ProviderRatingService;
 import com.tba.services.ServicePermissionService;
 import com.tba.services.ServiceProviderService;
 import com.tba.services.UserService;
@@ -28,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,6 +60,9 @@ public class ApiServiceProviderController {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private ProviderRatingService providerRatingService;
 
     @PostMapping("/provider/register")
     public ResponseEntity<?> registerProvider(@Valid @ModelAttribute ProviderRegisterRequestDTO dto) {
@@ -99,10 +107,10 @@ public class ApiServiceProviderController {
             user.setEmail(dto.getEmail());
             user.setAddress(dto.getAddress());
             user.setUsername(dto.getUsername());
-            user.setPassword(dto.getPassword()); 
+            user.setPassword(dto.getPassword());
             user.setPhoneNumber(dto.getPhoneNumber());
             user.setAvatar(imageUrl);
-            user.setRole(UserRole.PROVIDER); 
+            user.setRole(UserRole.PROVIDER);
             user.setCreatedAt(new Date());
             user.setUpdatedAt(new Date());
 
@@ -258,5 +266,70 @@ public class ApiServiceProviderController {
             default:
                 return ResponseEntity.ok(Map.of("status", "UNKNOWN", "message", "Trạng thái không xác định!"));
         }
+    }
+
+    @GetMapping("/provider/{id}")
+    public ResponseEntity<?> getProviderById(@PathVariable("id") Integer id) {
+        ServiceProvider sp = providerService.getProviderById(id);
+        if (sp == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = sp.getUserId();
+
+        ServiceProviderResponseDTO res = new ServiceProviderResponseDTO(
+                sp.getId(),
+                sp.getCompanyName(),
+                sp.getState(),
+                sp.getCreatedAt(),
+                sp.getUpdatedAt(),
+                user.getAddress(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getAvatar()
+        );
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/secure/provider/{id}/rating")
+    public ResponseEntity<?> getProviderRatings(@PathVariable("id") Integer providerId) {
+        List<ProviderRating> ratings = providerRatingService.getRatingsByProviderId(providerId);
+        List<ProviderRatingResponseDTO> dtos = ratings.stream().map(r -> {
+            User user = r.getUserId();
+            return new ProviderRatingResponseDTO(
+                    r.getId(),
+                    user.getId(),
+                    user.getFirstName() + " " + user.getLastName(),
+                    user.getAvatar(),
+                    r.getRate(),
+                    r.getComment(),
+                    r.getCreatedDate()
+            );
+        }).toList();
+        return ResponseEntity.ok(dtos);
+    }
+
+    @PostMapping("/secure/provider/{id}/rating")
+    public ResponseEntity<?> addOrUpdateRating(@PathVariable("id") Integer providerId,
+            @RequestBody ProviderRatingRequestDTO dto,
+            Principal principal) {
+        User user = userService.getUserByUsername(principal.getName());
+        if (user == null) {
+            return ResponseEntity.status(401).body("Bạn cần đăng nhập!");
+        }
+        ServiceProvider provider = providerService.getProviderById(providerId);
+        if (provider == null) {
+            return ResponseEntity.badRequest().body("Nhà cung cấp không tồn tại!");
+        }
+
+        ProviderRating rating = providerRatingService.findByUserAndProvider(user.getId(), providerId);
+        if (rating == null) {
+            providerRatingService.addRating(user, provider, dto.getRate(), dto.getComment());
+        } else {
+            rating.setRate((short) dto.getRate());
+            rating.setComment(dto.getComment());
+            providerRatingService.updateRating(rating);
+        }
+        return ResponseEntity.ok("Đã gửi đánh giá");
     }
 }
