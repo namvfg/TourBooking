@@ -50,7 +50,7 @@ public class ApiServicePostController {
 
     @Autowired
     private ServicePermissionService permissionService;
-    
+
     @Autowired
     private UserService userService;
 
@@ -66,15 +66,22 @@ public class ApiServicePostController {
     @Autowired
     private CloudinaryService cloudinaryService;
 
-
     @GetMapping(value = "/service-post/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAllServicePostsPaged(
             @RequestParam(name = "page", defaultValue = "0") Integer page,
-            @RequestParam(name = "size", defaultValue = "10") Integer size
+            @RequestParam(name = "size", defaultValue = "10") Integer size,
+            @RequestParam(name = "providerId", required = false) Integer providerId
     ) {
-        List<ServicePost> posts = servicePostService.getServicePostsPaged(page, size);
+        List<ServicePost> posts;
+        long total;
+        if (providerId != null) {
+            posts = servicePostService.getServicePostsByProviderIdPaged(providerId, page, size);
+            total = servicePostService.countServicePostsByProviderId(providerId);
+        } else {
+            posts = servicePostService.getServicePostsPaged(page, size);
+            total = servicePostService.countServicePosts();
+        }
         List<ServicePostResponseDTO> result = posts.stream().map(this::toResponseDTO).collect(Collectors.toList());
-        long total = servicePostService.countServicePosts();
         int totalPages = (int) Math.ceil((double) total / size);
         return ResponseEntity.ok(
                 Map.of(
@@ -87,38 +94,38 @@ public class ApiServicePostController {
         );
     }
 
+    @GetMapping("/service-post/search")
+    public ResponseEntity<?> searchServicePosts(
+            @RequestParam Map<String, String> params,
+            @RequestParam(name = "page", defaultValue = "0") Integer page,
+            @RequestParam(name = "size", defaultValue = "10") Integer size
+    ) {
+        params.put("page", String.valueOf(page));
+        params.put("size", String.valueOf(size));
 
-@GetMapping("/service-post/search")
-public ResponseEntity<?> searchServicePosts(
-    @RequestParam Map<String, String> params,
-    @RequestParam(name = "page", defaultValue = "0") Integer page,
-    @RequestParam(name = "size", defaultValue = "10") Integer size
-) {
-    params.put("page", String.valueOf(page));
-    params.put("size", String.valueOf(size));
+        List<ServicePost> posts = servicePostService.getServicePosts(params);
+        List<ServicePostResponseDTO> result = posts.stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
 
-    List<ServicePost> posts = servicePostService.getServicePosts(params);
-    List<ServicePostResponseDTO> result = posts.stream()
-        .map(this::toResponseDTO)
-        .collect(Collectors.toList());
+        // Lấy tổng bản ghi đúng filter
+        Map<String, String> filterParams = new HashMap<>(params);
+        filterParams.remove("page");
+        filterParams.remove("size");
+        long total = servicePostService.countServicePostsWithFilters(filterParams);
+        int totalPages = (int) Math.ceil((double) total / size);
 
-    // Lấy tổng bản ghi đúng filter
-    Map<String, String> filterParams = new HashMap<>(params);
-    filterParams.remove("page");
-    filterParams.remove("size");
-    long total = servicePostService.countServicePostsWithFilters(filterParams);
-    int totalPages = (int) Math.ceil((double) total / size);
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", result,
+                        "page", page,
+                        "size", size,
+                        "total", total,
+                        "totalPages", totalPages
+                )
+        );
+    }
 
-    return ResponseEntity.ok(
-        Map.of(
-            "data", result,
-            "page", page,
-            "size", size,
-            "total", total,
-            "totalPages", totalPages
-        )
-    );
-}
     @GetMapping("/service-post/{id}")
     public ResponseEntity<ServicePostResponseDTO> getServicePostById(@PathVariable("id") Integer id) {
         ServicePost post = servicePostService.getServicePostById(id);
@@ -159,8 +166,8 @@ public ResponseEntity<?> searchServicePosts(
 
         String imageUrl;
         try {
-           imageUrl = cloudinaryService.uploadImage(image, "service-post")
-                        .get("secure_url").toString();
+            imageUrl = cloudinaryService.uploadImage(image, "service-post")
+                    .get("secure_url").toString();
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Lỗi upload ảnh dịch vụ!");
         }
@@ -183,50 +190,52 @@ public ResponseEntity<?> searchServicePosts(
         post.setIsDeleted(false);
         post.setServiceProviderId(provider);
 
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
         Date roomStart = null, roomEnd = null, tourStart = null, tourEnd = null, transportStart = null;
         try {
-            if (roomStartDate != null && !roomStartDate.isEmpty())
+            if (roomStartDate != null && !roomStartDate.isEmpty()) {
                 roomStart = sdf.parse(roomStartDate);
-            if (roomEndDate != null && !roomEndDate.isEmpty())
+            }
+            if (roomEndDate != null && !roomEndDate.isEmpty()) {
                 roomEnd = sdf.parse(roomEndDate);
-            if (tourStartDate != null && !tourStartDate.isEmpty())
+            }
+            if (tourStartDate != null && !tourStartDate.isEmpty()) {
                 tourStart = sdf.parse(tourStartDate);
-            if (tourEndDate != null && !tourEndDate.isEmpty())
+            }
+            if (tourEndDate != null && !tourEndDate.isEmpty()) {
                 tourEnd = sdf.parse(tourEndDate);
-            if (transportStartDate != null && !transportStartDate.isEmpty())
+            }
+            if (transportStartDate != null && !transportStartDate.isEmpty()) {
                 transportStart = sdf.parse(transportStartDate);
+            }
         } catch (ParseException e) {
             return ResponseEntity.badRequest().body("Ngày giờ không đúng định dạng! Định dạng phải là yyyy-MM-dd'T'HH:mm");
         }
 
         // Sau khi thêm ServicePost, thêm bản ghi chi tiết theo loại dịch vụ
-       
-            switch (post.getServiceType().name()) {
-                case "ROOM":
-                    Room room = new Room();
-                    room.setStartDate(roomStart);
-                    room.setEndDate(roomEnd);
-                    roomService.addRoom(post,room);
-                    break;
-                case "TOUR":
-                    Tour tour = new Tour();
-                    tour.setStartDate(tourStart);
-                    tour.setEndDate(tourEnd);
-                    tourService.addTour(post,tour);
-                    break;
-                case "TRANSPORTATION":
-                    Transportation transportation = new Transportation();
-                    transportation.setTransportType(transportType);
-                    transportation.setStartDate(transportStart);
-                    transportation.setDestination(destination);
-                    transportationService.addTransportation(post,transportation);
-                    break;
-                default:
-                    break;
-            }
-        
+        switch (post.getServiceType().name()) {
+            case "ROOM":
+                Room room = new Room();
+                room.setStartDate(roomStart);
+                room.setEndDate(roomEnd);
+                roomService.addRoom(post, room);
+                break;
+            case "TOUR":
+                Tour tour = new Tour();
+                tour.setStartDate(tourStart);
+                tour.setEndDate(tourEnd);
+                tourService.addTour(post, tour);
+                break;
+            case "TRANSPORTATION":
+                Transportation transportation = new Transportation();
+                transportation.setTransportType(transportType);
+                transportation.setStartDate(transportStart);
+                transportation.setDestination(destination);
+                transportationService.addTransportation(post, transportation);
+                break;
+            default:
+                break;
+        }
 
         return ResponseEntity.ok(toResponseDTO(post));
     }
@@ -335,7 +344,7 @@ public ResponseEntity<?> searchServicePosts(
         }
         return dto;
     }
-    
+
     @GetMapping("/secure/provider/service-permissions")
     public ResponseEntity<List<String>> getActiveServiceTypesForProvider(Principal principal) {
         User user = userService.getUserByUsername(principal.getName());
@@ -348,9 +357,9 @@ public ResponseEntity<?> searchServicePosts(
         }
         List<ServicePermission> perms = permissionService.getPermissionsByProviderId(provider.getId());
         List<String> allowedTypes = perms.stream()
-            .filter(p -> p.getState() == State.ACTIVE)
-            .map(p -> p.getServiceType().name())
-            .collect(Collectors.toList());
+                .filter(p -> p.getState() == State.ACTIVE)
+                .map(p -> p.getServiceType().name())
+                .collect(Collectors.toList());
         return ResponseEntity.ok(allowedTypes);
     }
 }

@@ -21,8 +21,35 @@ public class ServiceProviderResponseDTO {
     private Date providerCreatedAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Date providerUpdatedAt;
-
+    
+    private String address;
+    private String email;
+    private String phoneNumber;
+    private String avatar;
+    
     public ServiceProviderResponseDTO() {
+    }
+    
+    public ServiceProviderResponseDTO(
+            Integer id,
+            String companyName,
+            State state,
+            Date createdAt,
+            Date updatedAt,
+            String address,
+            String email,
+            String phoneNumber,
+            String avatar
+    ) {
+        this.providerId = id;
+        this.companyName = companyName;
+        this.state = state;
+        this.providerCreatedAt = createdAt;
+        this.providerUpdatedAt = updatedAt;
+        this.address = address;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.avatar = avatar;
     }
 
     public ServiceProviderResponseDTO(Integer id, String companyName, State state, Date createdAt, Date updatedAt) {
@@ -101,5 +128,61 @@ public class ServiceProviderResponseDTO {
      */
     public void setProviderUpdatedAt(Date providerUpdatedAt) {
         this.providerUpdatedAt = providerUpdatedAt;
+    }
+
+    /**
+     * @return the address
+     */
+    public String getAddress() {
+        return address;
+    }
+
+    /**
+     * @param address the address to set
+     */
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * @return the phoneNumber
+     */
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    /**
+     * @param phoneNumber the phoneNumber to set
+     */
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    /**
+     * @return the avatar
+     */
+    public String getAvatar() {
+        return avatar;
+    }
+
+    /**
+     * @param avatar the avatar to set
+     */
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

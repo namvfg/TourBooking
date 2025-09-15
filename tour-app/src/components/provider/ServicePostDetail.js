@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios, { endpoints, authApis } from "../configs/Apis";
+import { endpoints, authApis } from "../configs/Apis";
 import { MyUserContext } from "../configs/Context";
 import { Card, Button, Spinner, Alert, Modal, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -8,6 +8,7 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import CustomEditor from '../../ckeditor/build/ckeditor';
 import { UploadAdapterPlugin } from "../layout/CustomUploadAdapter";
 import cookie from "react-cookies";
+import Apis from "../configs/Apis";
 
 const SERVICE_TYPE_OPTIONS = [
     "ROOM",
@@ -51,7 +52,7 @@ const ServicePostDetail = () => {
             setError("");
             try {
                 const url = `${endpoints["service-post-detail"]}/${id}`;
-                const res = await axios.get(url);
+                const res = await Apis.get(url);
                 setPost(res.data);
             } catch (err) {
                 setError("Không lấy được thông tin dịch vụ!");
@@ -134,7 +135,7 @@ const ServicePostDetail = () => {
             });
             toast.success("Cập nhật thành công!");
             setShowEditModal(false);
-            const res = await axios.get(`${endpoints["service-post-detail"]}/${id}`);
+            const res = await Apis.get(`${endpoints["service-post-detail"]}/${id}`);
             setPost(res.data);
         } catch (err) {
             toast.error("Lỗi cập nhật! " + (err?.response?.data || err.message));
@@ -191,7 +192,17 @@ const ServicePostDetail = () => {
                 />
             )}
             <Card.Body>
-                <Card.Title style={{ color: "#0d6efd", fontWeight: "bold", fontSize: "1.2rem" }}>
+                <Card.Title
+                    style={{
+                        color: "#0d6efd",
+                        fontWeight: "bold",
+                        fontSize: "1.2rem",
+                        textDecoration: "underline",
+                        cursor: "pointer"
+                    }}
+                    onClick={() => navigate(`/provider/${post.serviceProviderId}`)}
+                    title="Xem thông tin nhà cung cấp"
+                >
                     {post.companyName}
                 </Card.Title>
                 <Card.Title style={{ fontWeight: "bold", fontSize: "1.5rem" }}>
@@ -217,7 +228,6 @@ const ServicePostDetail = () => {
                     <span>
                         <b>Mô tả:</b>
                     </span>
-                    {/* Đổi từ <p> sang <div> để không vi phạm DOM nesting */}
                     <div className="service-desc-content" dangerouslySetInnerHTML={{ __html: post.description || "" }} />
                     <br />
                     <span>

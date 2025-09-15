@@ -63,4 +63,14 @@ public class ServicePostServiceImpl implements ServicePostService {
     public long countServicePostsWithFilters(Map<String, String> params) {
         return servicePostRepository.countServicePostsWithFilters(params);
     }
+    
+    @Override
+    public List<ServicePost> getServicePostsByProviderIdPaged(int providerId, int page, int size) {
+        return servicePostRepository.getServicePostsByProviderIdPaged(providerId, page, size);
+    }
+
+    @Override
+    public long countServicePostsByProviderId(int providerId) {
+        return servicePostRepository.countServicePostsByProviderId(providerId);
+    }
 }

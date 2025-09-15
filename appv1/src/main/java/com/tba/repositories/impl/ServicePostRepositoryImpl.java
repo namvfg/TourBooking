@@ -222,5 +222,42 @@ public class ServicePostRepositoryImpl implements ServicePostRepository {
         cq.select(cb.count(root)).where(cb.equal(root.get("isDeleted"), false));
         return session.createQuery(cq).getSingleResult();
     }
+    
+    @Override
+    public List<ServicePost> getServicePostsByProviderIdPaged(int providerId, int page, int size) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<ServicePost> cq = cb.createQuery(ServicePost.class);
+        Root<ServicePost> root = cq.from(ServicePost.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(root.get("isDeleted"), false));
+        predicates.add(cb.equal(root.get("serviceProviderId").get("id"), providerId));
+
+        cq.select(root).where(predicates.toArray(new Predicate[0]));
+        cq.orderBy(cb.asc(root.get("id")));
+
+        Query<ServicePost> query = session.createQuery(cq);
+        query.setFirstResult(page * size);
+        query.setMaxResults(size);
+
+        return query.getResultList();
+    }
+
+    @Override
+    public long countServicePostsByProviderId(int providerId) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<ServicePost> root = cq.from(ServicePost.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(root.get("isDeleted"), false));
+        predicates.add(cb.equal(root.get("serviceProviderId").get("id"), providerId));
+
+        cq.select(cb.count(root)).where(predicates.toArray(new Predicate[0]));
+
+        return session.createQuery(cq).getSingleResult();
+    }
 
 }

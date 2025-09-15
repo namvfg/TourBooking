@@ -22,6 +22,8 @@ export const endpoints = {
     "service-post-add": "/secure/service-post/add",
     "service-post-edit": "/secure/service-post/edit",    
     "service-post-delete": "/secure/service-post/delete",
+    "provider-by-id": "/provider",
+    "provider-ratings": "/secure/provider",
 
 
     //enums
