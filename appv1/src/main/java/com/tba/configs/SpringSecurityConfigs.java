@@ -72,6 +72,8 @@ public class SpringSecurityConfigs {
                 .requestMatchers(HttpMethod.GET, "/api/service-post/**").permitAll()
                 .requestMatchers("/", "/home").hasAuthority("ADMIN")
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/secure/provider/*/rating").hasAnyAuthority("USER", "PROVIDER", "ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/secure/provider/*/rating").hasAnyAuthority("USER", "PROVIDER", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/secure/provider/**").hasAnyAuthority("ADMIN", "PROVIDER")
                 .requestMatchers(HttpMethod.POST, "/api/secure/provider/**").hasAuthority("PROVIDER")
                 .requestMatchers(HttpMethod.PUT, "/api/secure/provider/**").hasAuthority("PROVIDER")
@@ -81,6 +83,7 @@ public class SpringSecurityConfigs {
                 .requestMatchers("/api/secure/**").authenticated()
                 .requestMatchers("/api/enums/**").permitAll()
                 .requestMatchers("/api/momo-return").permitAll()
+                .requestMatchers("/api/provider/**").permitAll()
                 .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

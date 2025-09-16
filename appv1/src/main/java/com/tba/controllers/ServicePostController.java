@@ -10,6 +10,7 @@ package com.tba.controllers;
  */
 import com.tba.pojo.ServicePost;
 import com.tba.services.ServicePostService;
+import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,7 +26,7 @@ public class ServicePostController {
 
     @GetMapping("/services")
     public String listServices(Model model) {
-        List<ServicePost> services = servicePostService.getAllServicePosts();
+        List<ServicePost> services = servicePostService.getServicePosts(new HashMap<>());
         model.addAttribute("services", services);
         return "table_service";
     }

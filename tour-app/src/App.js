@@ -24,6 +24,7 @@ import ServicePostDetail from './components/provider/ServicePostDetail';
 import AddServicePost from "./components/provider/AddServicePost";
 import Payment from './components/user/Payment';
 import PaymentReturn from './components/user/PaymentReturn';
+import ProviderDetail from './components/provider/ProviderDetail';
 
 const App = () => {
 
@@ -84,7 +85,6 @@ const App = () => {
                 <Route path="/unauthorized" element={<Unauthorized />} />
                 <Route path="/service-posts" element={<ServicePostList />} />
                 <Route path="/service-post/:id" element={<ServicePostDetail />} />
-
                 <Route
                   path="/add-service-post"
                   element={
@@ -110,7 +110,8 @@ const App = () => {
                       <PaymentReturn />
                     </ProtectedRoute>
                   }
-                />
+                />  
+                <Route path="/provider/:providerId" element={<ProviderDetail />} />
 
                 <Route
                   path="/profile"

@@ -13,9 +13,10 @@ import com.tba.pojo.Room;
 import com.tba.pojo.Tour;
 import com.tba.pojo.Transportation;
 import java.util.List;
+import java.util.Map;
 
 public interface ServicePostRepository {
-    List<ServicePost> getAllServicePosts();
+    public List<ServicePost> getServicePosts(Map<String, String> params);
     
     void softDeleteServicePost(Integer id);
 
@@ -27,6 +28,11 @@ public interface ServicePostRepository {
     
     List<ServicePost> getServicePostsPaged(int page, int size);
     long countServicePosts();
+    
+    long countServicePostsWithFilters(Map<String, String> params);
+    
+    List<ServicePost> getServicePostsByProviderIdPaged(int providerId, int page, int size);
+    long countServicePostsByProviderId(int providerId);
     
 }
 

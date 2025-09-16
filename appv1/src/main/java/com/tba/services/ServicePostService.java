@@ -10,9 +10,10 @@ package com.tba.services;
  */
 import com.tba.pojo.ServicePost;
 import java.util.List;
+import java.util.Map;
 
 public interface ServicePostService {
-    List<ServicePost> getAllServicePosts();
+    List<ServicePost> getServicePosts(Map<String, String> params);
     
     void softDeleteServicePost(Integer id);
 
@@ -24,4 +25,9 @@ public interface ServicePostService {
     
     List<ServicePost> getServicePostsPaged(int page, int size);
     long countServicePosts();
+    
+    long countServicePostsWithFilters(Map<String, String> params);
+    
+    List<ServicePost> getServicePostsByProviderIdPaged(int providerId, int page, int size);
+    long countServicePostsByProviderId(int providerId);
 }

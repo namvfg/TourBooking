@@ -12,6 +12,7 @@ export const endpoints = {
     "register": "/register",
     "profile": "/secure/profile",
     "payment": (postId) => `/secure/transaction/service-post/${postId}`,
+    "service-post-search": "/service-post/search",
 
     //provider
     "provider-register": "/provider/register",
@@ -22,6 +23,8 @@ export const endpoints = {
     "service-post-add": "/secure/service-post/add",
     "service-post-edit": "/secure/service-post/edit",    
     "service-post-delete": "/secure/service-post/delete",
+    "provider-by-id": "/provider",
+    "provider-ratings": "/secure/provider",
 
 
     //enums
