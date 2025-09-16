@@ -13,6 +13,7 @@ import com.tba.repositories.TransactionRepository;
 import java.util.List;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,5 +59,19 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     public void update(Transaction transaction) {
         Session s = this.factory.getObject().getCurrentSession();
         s.merge(transaction);
+    }
+
+    @Override
+    public Transaction getTransactionByTransactionCode(String transactionCode) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Transaction> cq = cb.createQuery(Transaction.class);
+        Root<Transaction> root = cq.from(Transaction.class);
+
+        Predicate codeMatch = cb.equal(root.get("transactionCode"), transactionCode);
+        cq.select(root).where(codeMatch);
+
+        List<Transaction> result = session.createQuery(cq).setMaxResults(1).getResultList();
+        return result.isEmpty() ? null : result.get(0);
     }
 }

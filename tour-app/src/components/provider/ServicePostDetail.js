@@ -1,4 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios, { endpoints } from "../configs/Apis";
+import { Container, Row, Col, Card, Spinner, Alert } from "react-bootstrap";
+import parse from "html-react-parser";
 import { useParams, useNavigate } from "react-router-dom";
 import { endpoints, authApis } from "../configs/Apis";
 import { MyUserContext } from "../configs/Context";
@@ -41,10 +45,6 @@ const ServicePostDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const navigate = useNavigate();
-
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [editData, setEditData] = useState(null);
-    const [editLoading, setEditLoading] = useState(false);
 
     useEffect(() => {
         const loadDetail = async () => {
@@ -177,309 +177,95 @@ const ServicePostDetail = () => {
             }
         }
     };
-
     if (loading) return <Spinner animation="border" variant="primary" />;
     if (error) return <Alert variant="danger">{error}</Alert>;
     if (!post) return <Alert variant="info">Không tìm thấy dịch vụ!</Alert>;
 
     return (
-        <Card className="shadow my-4 mx-auto" style={{ maxWidth: "600px" }}>
-            {post.image && (
-                <Card.Img
-                    variant="top"
-                    src={post.image}
-                    style={{ objectFit: "cover", height: "220px" }}
-                />
-            )}
-            <Card.Body>
-                <Card.Title
-                    style={{
-                        color: "#0d6efd",
-                        fontWeight: "bold",
-                        fontSize: "1.2rem",
-                        textDecoration: "underline",
-                        cursor: "pointer"
-                    }}
-                    onClick={() => navigate(`/provider/${post.serviceProviderId}`)}
-                    title="Xem thông tin nhà cung cấp"
-                >
-                    {post.companyName}
-                </Card.Title>
-                <Card.Title style={{ fontWeight: "bold", fontSize: "1.5rem" }}>
-                    {post.name}
-                </Card.Title>
-                <Card.Text>
-                    <span style={{
-                        color: "#28a745",
-                        fontWeight: "bold",
-                        fontSize: "1.2rem",
-                    }}>
-                        {post.price ? Number(post.price).toLocaleString("vi-VN") : 0} VNĐ
-                    </span>
-                    <br />
-                    <span>
-                        <b>Địa chỉ:</b> {post.address || ""}
-                    </span>
-                    <br />
-                    <span>
-                        <b>Loại:</b> {post.serviceType || ""}
-                    </span>
-                    <br />
-                    <span>
-                        <b>Mô tả:</b>
-                    </span>
-                    <div className="service-desc-content" dangerouslySetInnerHTML={{ __html: post.description || "" }} />
-                    <br />
-                    <span>
-                        <b>Ngày tạo:</b> {formatDate(post.createdDate)}
-                    </span>
-                    <br />
-                    <span>
-                        <b>Còn lại:</b> {post.availableSlot ?? 0} slot
-                    </span>
-                    {post.serviceType === "ROOM" && (
-                        <>
-                            <br />
-                            <span>
-                                <b>Ngày bắt đầu phòng:</b> {formatDate(post.roomStartDate)}
-                            </span>
-                            <br />
-                            <span>
-                                <b>Ngày kết thúc phòng:</b> {formatDate(post.roomEndDate)}
-                            </span>
-                        </>
+        <Container className="my-5">
+            <Card className="shadow overflow-hidden">
+                <Row className="g-0">
+                    {/* Mobile: ảnh trên */}
+                    {post.image && (
+                        <Col xs={12} className="d-block d-md-none">
+                            <img
+                                src={post.image}
+                                alt={post.name}
+                                className="img-fluid w-100"
+                                style={{ height: "250px", objectFit: "cover" }}
+                            />
+                        </Col>
                     )}
-                    {post.serviceType === "TOUR" && (
-                        <>
-                            <br />
-                            <span>
-                                <b>Ngày bắt đầu tour:</b> {formatDate(post.tourStartDate)}
-                            </span>
-                            <br />
-                            <span>
-                                <b>Ngày kết thúc tour:</b> {formatDate(post.tourEndDate)}
-                            </span>
-                        </>
-                    )}
-                    {post.serviceType === "TRANSPORTATION" && (
-                        <>
-                            <br />
-                            <span>
-                                <b>Loại phương tiện:</b> {post.transportType}
-                            </span>
-                            <br />
-                            <span>
-                                <b>Ngày khởi hành:</b> {formatDate(post.transportStartDate)}
-                            </span>
-                            <br />
-                            <span>
-                                <b>Điểm đến:</b> {post.destination}
-                            </span>
-                        </>
-                    )}
-                </Card.Text>
-                {isOwner && (
-                    <div className="d-flex gap-2 mt-3">
-                        <Button variant="warning" onClick={handleEdit}>
-                            Cập nhật
-                        </Button>
-                        <Button variant="danger" onClick={handleDelete}>
-                            Xóa
-                        </Button>
-                    </div>
-                )}
-            </Card.Body>
 
-            <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Cập nhật dịch vụ</Modal.Title>
-                </Modal.Header>
-                <Form onSubmit={handleEditSubmit}>
-                    <Modal.Body>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Tên dịch vụ</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="name"
-                                value={editData?.name || ""}
-                                onChange={handleEditChange}
-                                required
+                    {/* Desktop: ảnh bên trái */}
+                    {post.image && (
+                        <Col md={5} className="d-none d-md-block">
+                            <img
+                                src={post.image}
+                                alt={post.name}
+                                className="img-fluid h-100 w-100"
+                                style={{ objectFit: "cover" }}
                             />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Mô tả</Form.Label>
-                            <CKEditor
-                                editor={CustomEditor}
-                                data={editData?.description || ""}
-                                onReady={(editor) => {
-                                    UploadAdapterPlugin(editor);
-                                    editor.editing.view.change((writer) => {
-                                        const root = editor.editing.view.document.getRoot();
-                                        writer.setStyle("min-height", "250px", root);
-                                        writer.setStyle("max-height", "400px", root);
-                                        writer.setStyle("overflow-y", "auto", root);
-                                        writer.setStyle("padding", "10px", root);
-                                        writer.setStyle("border", "1px solid #ccc", root);
-                                        writer.setStyle("border-radius", "6px", root);
-                                    });
-                                }}
-                                onChange={handleCKEditorChange}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Giá</Form.Label>
-                            <Form.Control
-                                type="number"
-                                name="price"
-                                value={editData?.price || ""}
-                                onChange={handleEditChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Số slot còn lại</Form.Label>
-                            <Form.Control
-                                type="number"
-                                name="availableSlot"
-                                value={editData?.availableSlot || ""}
-                                onChange={handleEditChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Địa chỉ</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="address"
-                                value={editData?.address || ""}
-                                onChange={handleEditChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Loại dịch vụ</Form.Label>
-                            <Form.Select
-                                name="serviceType"
-                                value={editData?.serviceType || ""}
-                                onChange={handleEditChange}
-                                required
-                                disabled
-                            >
-                                <option value="">-- Chọn loại dịch vụ --</option>
-                                {SERVICE_TYPE_OPTIONS.map(type => (
-                                    <option key={type} value={type}>{type}</option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
-                        {editData?.serviceType === "TRANSPORTATION" && (
-                            <>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Loại phương tiện</Form.Label>
-                                    <Form.Select
-                                        name="transportType"
-                                        value={editData.transportType || ""}
-                                        onChange={handleEditChange}
-                                        required
-                                    >
-                                        <option value="">-- Chọn loại phương tiện --</option>
-                                        {TRANSPORT_ENUMS.map(opt => (
-                                            <option value={opt.value} key={opt.value}>{opt.label}</option>
-                                        ))}
-                                    </Form.Select>
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Ngày khởi hành</Form.Label>
-                                    <Form.Control
-                                        type="datetime-local"
-                                        name="transportStartDate"
-                                        value={editData.transportStartDate || ""}
-                                        onChange={handleEditChange}
-                                        required
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Điểm đến</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="destination"
-                                        value={editData.destination || ""}
-                                        onChange={handleEditChange}
-                                        required
-                                    />
-                                </Form.Group>
-                            </>
-                        )}
-                        {editData?.serviceType === "ROOM" && (
-                            <>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Ngày bắt đầu phòng</Form.Label>
-                                    <Form.Control
-                                        type="datetime-local"
-                                        name="roomStartDate"
-                                        value={editData.roomStartDate || ""}
-                                        onChange={handleEditChange}
-                                        required
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Ngày kết thúc phòng</Form.Label>
-                                    <Form.Control
-                                        type="datetime-local"
-                                        name="roomEndDate"
-                                        value={editData.roomEndDate || ""}
-                                        onChange={handleEditChange}
-                                    />
-                                </Form.Group>
-                            </>
-                        )}
-                        {editData?.serviceType === "TOUR" && (
-                            <>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Ngày bắt đầu tour</Form.Label>
-                                    <Form.Control
-                                        type="datetime-local"
-                                        name="tourStartDate"
-                                        value={editData.tourStartDate || ""}
-                                        onChange={handleEditChange}
-                                        required
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Ngày kết thúc tour</Form.Label>
-                                    <Form.Control
-                                        type="datetime-local"
-                                        name="tourEndDate"
-                                        value={editData.tourEndDate || ""}
-                                        onChange={handleEditChange}
-                                    />
-                                </Form.Group>
-                            </>
-                        )}
-                        <Form.Group className="mb-3">
-                            <Form.Label>Ảnh (không chọn nếu giữ nguyên)</Form.Label>
-                            <Form.Control
-                                type="file"
-                                name="image"
-                                accept="image/*"
-                                onChange={handleEditChange}
-                            />
-                        </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={() => setShowEditModal(false)}>
-                            Đóng
-                        </Button>
-                        <Button
-                            type="submit"
-                            variant="primary"
-                            disabled={editLoading}
-                        >
-                            {editLoading ? "Đang lưu..." : "Lưu"}
-                        </Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
-        </Card>
+                        </Col>
+                    )}
+
+                    {/* Nội dung */}
+                    <Col md={post.image ? 7 : 12}>
+                        <div style={{ padding: "2rem", maxHeight: "500px", overflowY: "auto" }}>
+                            <h4 className="text-primary fw-bold mb-2">{post.companyName}</h4>
+                            <h2 className="fw-bold mb-3">{post.name}</h2>
+
+                            <div className="text-success fs-5 fw-bold mb-3">
+                                {post.price ? Number(post.price).toLocaleString("vi-VN") : 0} VNĐ
+                            </div>
+
+                            <p><b>Địa chỉ:</b> {post.address || ""}</p>
+                            <p><b>Loại:</b> {post.serviceType || ""}</p>
+                            <p><b>Ngày tạo:</b> {formatDate(post.createdDate)}</p>
+                            <p><b>Còn lại:</b> {post.availableSlot ?? 0} slot</p>
+
+                            {post.serviceType === "ROOM" && (
+                                <>
+                                    <p><b>Ngày bắt đầu phòng:</b> {formatDate(post.roomStartDate)}</p>
+                                    <p><b>Ngày kết thúc phòng:</b> {formatDate(post.roomEndDate)}</p>
+                                </>
+                            )}
+
+                            {post.serviceType === "TOUR" && (
+                                <>
+                                    <p><b>Ngày bắt đầu tour:</b> {formatDate(post.tourStartDate)}</p>
+                                    <p><b>Ngày kết thúc tour:</b> {formatDate(post.tourEndDate)}</p>
+                                </>
+                            )}
+
+                            {post.serviceType === "TRANSPORTATION" && (
+                                <>
+                                    <p><b>Loại phương tiện:</b> {post.transportType}</p>
+                                    <p><b>Ngày khởi hành:</b> {formatDate(post.transportStartDate)}</p>
+                                    <p><b>Điểm đến:</b> {post.destination}</p>
+                                </>
+                            )}
+
+                            <div className="mt-3">
+                                <b>Mô tả:</b>
+                                <div className="service-desc-content mt-2">
+                                    {post.description ? parse(post.description) : null}
+                                </div>
+                            </div>
+
+                            <div className="mt-4 text-end">
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={() => navigate(`/payment?postId=${post.id}`)}
+                                >
+                                    Đặt vé
+                                </button>
+                            </div>
+                        </div>
+                    </Col>
+                </Row>
+            </Card>
+        </Container>
     );
 };
 

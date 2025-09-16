@@ -11,6 +11,7 @@ export const endpoints = {
     //user
     "register": "/register",
     "profile": "/secure/profile",
+    "payment": (postId) => `/secure/transaction/service-post/${postId}`,
     "service-post-search": "/service-post/search",
 
     //provider
@@ -28,6 +29,7 @@ export const endpoints = {
 
     //enums
     "service-types": "/enums/service-types",
+    "payment-methods": "/enums/transaction-types",
 
     //upload image cho ckeditor
     "upload-image": "/secure/upload-image"
