@@ -26,6 +26,7 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import org.hibernate.query.Query;
 
@@ -222,7 +223,7 @@ public class ServicePostRepositoryImpl implements ServicePostRepository {
         cq.select(cb.count(root)).where(cb.equal(root.get("isDeleted"), false));
         return session.createQuery(cq).getSingleResult();
     }
-    
+
     @Override
     public List<ServicePost> getServicePostsByProviderIdPaged(int providerId, int page, int size) {
         Session session = this.factory.getObject().getCurrentSession();
@@ -258,6 +259,66 @@ public class ServicePostRepositoryImpl implements ServicePostRepository {
         cq.select(cb.count(root)).where(predicates.toArray(new Predicate[0]));
 
         return session.createQuery(cq).getSingleResult();
+    }
+
+    @Override
+    public long countServicePostsByMonthYear(Integer month, Integer year) {
+        Session session = this.factory.getObject().getCurrentSession();
+        String hql = "SELECT COUNT(s) FROM ServicePost s WHERE s.isDeleted = false";
+        if (month != null && year != null) {
+            hql += " AND MONTH(s.createdDate) = :month AND YEAR(s.createdDate) = :year";
+        }
+        org.hibernate.query.Query q = session.createQuery(hql);
+        if (month != null && year != null) {
+            q.setParameter("month", month);
+            q.setParameter("year", year);
+        }
+        return (Long) q.getSingleResult();
+    }
+
+    @Override
+    public Map<String, Long> countServiceByType(Integer month, Integer year) {
+        Session session = this.factory.getObject().getCurrentSession();
+        String hql = "SELECT s.serviceType, COUNT(s) FROM ServicePost s WHERE s.isDeleted = false";
+        if (month != null && year != null) {
+            hql += " AND MONTH(s.createdDate) = :month AND YEAR(s.createdDate) = :year";
+        }
+        hql += " GROUP BY s.serviceType";
+        Query q = session.createQuery(hql);
+        if (month != null && year != null) {
+            q.setParameter("month", month);
+            q.setParameter("year", year);
+        }
+        List<Object[]> results = q.getResultList();
+        Map<String, Long> map = new HashMap<>();
+        for (Object[] row : results) {
+            map.put(row[0].toString(), (Long) row[1]);
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, Long> revenueByServiceType(Integer month, Integer year) {
+        Session session = this.factory.getObject().getCurrentSession();
+        String hql = "SELECT s.serviceType, SUM(t.totalAmount) "
+                + "FROM Transaction t JOIN t.servicePostId s "
+                + "WHERE t.paymentStatus = :status";
+        if (month != null && year != null) {
+            hql += " AND MONTH(t.createdDate) = :month AND YEAR(t.createdDate) = :year";
+        }
+        hql += " GROUP BY s.serviceType";
+        Query q = session.createQuery(hql);
+        q.setParameter("status", com.tba.enums.PaymentStatus.PAID);
+        if (month != null && year != null) {
+            q.setParameter("month", month);
+            q.setParameter("year", year);
+        }
+        List<Object[]> results = q.getResultList();
+        Map<String, Long> map = new HashMap<>();
+        for (Object[] row : results) {
+            map.put(row[0].toString(), row[1] == null ? 0L : ((Number) row[1]).longValue());
+        }
+        return map;
     }
 
 }

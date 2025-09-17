@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-    <head>
-        <title>Trang chủ Admin</title>
+<head>
+    <title>Trang chủ Admin</title>
     <th:block th:replace="base :: resource"></th:block>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -14,6 +13,17 @@
     <div class="container">
         <h1 class="text-center">BÁO CÁO VÀ PHÂN TÍCH</h1>
 
+        <!-- Form lọc tháng/năm bằng lịch (month picker) -->
+        <form method="get" class="row g-3 mb-4 align-items-center">
+            <div class="col-auto">
+                <input type="month" class="form-control" name="monthYear"
+                       th:value="${month != null && year != null} ? ${year + '-' + (month < 10 ? '0' + month : month)} : ''"/>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-primary" type="submit">Lọc</button>
+            </div>
+        </form>
+
         <div class="row mb-4">
             <div class="col-xl-4 col-md-6 mb-4">
                 <div class="card bg-info text-white shadow h-100 py-2">
@@ -21,7 +31,7 @@
                         <div class="row align-items-center">
                             <div class="col">
                                 <div class="fw-bold text-uppercase mb-1">Tổng số người dùng</div>
-                                <div class="h4 fw-bold mb-0">0</div>
+                                <div class="h4 fw-bold mb-0" th:text="${userCount != null ? userCount : 'Không có dữ liệu'}">0</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-users fa-2x"></i>
@@ -37,7 +47,7 @@
                         <div class="row align-items-center">
                             <div class="col">
                                 <div class="fw-bold text-uppercase mb-1">Nhà cung cấp đang hoạt động</div>
-                                <div class="h4 fw-bold mb-0">0</div>
+                                <div class="h4 fw-bold mb-0" th:text="${providerCount}">0</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-building fa-2x"></i>
@@ -52,8 +62,8 @@
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col">
-                                <div class="fw-bold text-uppercase mb-1">Tổng giao dịch thành công</div>
-                                <div class="h4 fw-bold mb-0">0</div>
+                                <div class="fw-bold text-uppercase mb-1">Tổng số dịch vụ</div>
+                                <div class="h4 fw-bold mb-0" th:text="${serviceCount}">0</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-money-bill-wave fa-2x"></i>
@@ -66,29 +76,42 @@
 
         <h2 class="text-center">THỐNG KÊ DỊCH VỤ</h2>
         <div class="row">
+            <!-- Biểu đồ cột số lượng dịch vụ theo loại -->
             <div class="col-md-6 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title text-center">Biểu đồ loại dịch vụ</h5>
-                        <canvas id="serviceTypeChart"></canvas>
+                        <h5 class="card-title text-center">Biểu đồ cột số lượng dịch vụ theo loại</h5>
+                        <canvas id="serviceTypeBar"></canvas>
                     </div>
                 </div>
             </div>
-
+            <!-- Biểu đồ tròn phần trăm dịch vụ theo loại -->
             <div class="col-md-6 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title text-center">Biểu đồ trạng thái dịch vụ</h5>
-                        <canvas id="serviceStatusChart"></canvas>
+                        <h5 class="card-title text-center">Biểu đồ tròn tỷ lệ dịch vụ theo loại</h5>
+                        <canvas id="serviceTypePie"></canvas>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="col-md-12 mb-4">
+        <div class="row">
+            <!-- Biểu đồ cột doanh thu theo loại dịch vụ -->
+            <div class="col-md-6 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title text-center">Biểu đồ số dịch vụ theo nhà cung cấp</h5>
-                        <canvas id="serviceByProviderChart"></canvas>
+                        <h5 class="card-title text-center">Biểu đồ cột doanh thu theo loại dịch vụ</h5>
+                        <canvas id="revenueTypeBar"></canvas>
+                    </div>
+                </div>
+            </div>
+            <!-- Biểu đồ tròn tỷ lệ doanh thu theo loại dịch vụ -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Biểu đồ tròn tỷ lệ doanh thu theo loại dịch vụ</h5>
+                        <canvas id="revenueTypePie"></canvas>
                     </div>
                 </div>
             </div>
@@ -96,6 +119,133 @@
     </div>
 
     <div th:replace="base :: footer"></div>
-</body>
+    <script th:inline="javascript">
+        // Dữ liệu từ backend (Thymeleaf sẽ render thành object JS tương ứng)
+        let serviceTypeCount = /*[[${serviceTypeCount}]]*/ {};
+        let revenueByType = /*[[${revenueByType}]]*/ {};
 
+        // Số lượng dịch vụ từng loại
+        let typeLabels = Object.keys(serviceTypeCount);
+        let typeValues = Object.values(serviceTypeCount);
+
+        // Doanh thu từng loại dịch vụ
+        let revenueLabels = Object.keys(revenueByType);
+        let revenueValues = Object.values(revenueByType);
+
+        // Biểu đồ cột số lượng dịch vụ theo loại
+        if (document.getElementById('serviceTypeBar')) {
+            new Chart(document.getElementById('serviceTypeBar'), {
+                type: 'bar',
+                data: {
+                    labels: typeLabels,
+                    datasets: [{
+                        label: 'Số lượng dịch vụ',
+                        backgroundColor: ['#007bff', '#28a745', '#ffc107'],
+                        data: typeValues
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+        }
+
+        // Biểu đồ tròn tỷ lệ số lượng dịch vụ theo loại (hiện tỷ lệ %)
+        if (document.getElementById('serviceTypePie')) {
+            new Chart(document.getElementById('serviceTypePie'), {
+                type: 'pie',
+                data: {
+                    labels: typeLabels,
+                    datasets: [{
+                        label: 'Tỷ lệ số lượng dịch vụ',
+                        backgroundColor: ['#007bff', '#28a745', '#ffc107'],
+                        data: typeValues
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    let value = context.raw;
+                                    let percent = total === 0 ? 0 : (value / total * 100);
+                                    percent = percent.toFixed(2);
+                                    return `${context.label}: ${value} (${percent}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Biểu đồ cột doanh thu theo loại dịch vụ
+        if (document.getElementById('revenueTypeBar')) {
+            new Chart(document.getElementById('revenueTypeBar'), {
+                type: 'bar',
+                data: {
+                    labels: revenueLabels,
+                    datasets: [{
+                        label: 'Doanh thu (VNĐ)',
+                        backgroundColor: ['#6610f2', '#20c997', '#ffc107'],
+                        data: revenueValues
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return value.toLocaleString('vi-VN'); }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Biểu đồ tròn tỷ lệ doanh thu theo loại dịch vụ (hiện tỷ lệ %)
+        if (document.getElementById('revenueTypePie')) {
+            new Chart(document.getElementById('revenueTypePie'), {
+                type: 'pie',
+                data: {
+                    labels: revenueLabels,
+                    datasets: [{
+                        label: 'Tỷ lệ doanh thu',
+                        backgroundColor: ['#6610f2', '#20c997', '#ffc107'],
+                        data: revenueValues
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    let value = context.raw;
+                                    let percent = total === 0 ? 0 : (value / total * 100);
+                                    percent = percent.toFixed(2);
+                                    return `${context.label}: ${value.toLocaleString('vi-VN')} VNĐ (${percent}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Tự động submit form khi chọn tháng/năm
+        document.addEventListener('DOMContentLoaded', function() {
+            var monthInput = document.querySelector('input[name="monthYear"]');
+            if (monthInput) {
+                monthInput.addEventListener('change', function() {
+                    this.form.submit();
+                });
+            }
+        });
+    </script>
+</body>
 </html>

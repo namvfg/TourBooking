@@ -5,6 +5,7 @@ import { Card, Row, Col, Spinner, Alert, Container, Table } from "react-bootstra
 import { MyUserContext } from "../configs/Context";
 import ProviderRating from "./ProviderRating";
 import Apis from "../configs/Apis";
+import ChatWithProvider from "./ChatWithProvider"; // <-- import component mới
 
 const ProviderDetail = () => {
     const { providerId } = useParams();
@@ -16,6 +17,7 @@ const ProviderDetail = () => {
     const [ratingCount, setRatingCount] = useState(0);
 
     const [currentUser] = useContext(MyUserContext);
+    const [showChat, setShowChat] = useState(false);
 
     const navigate = useNavigate();
 
@@ -48,6 +50,27 @@ const ProviderDetail = () => {
     if (loading) return <Spinner animation="border" variant="primary" />;
     if (error) return <Alert variant="danger">{error}</Alert>;
     if (!provider) return <Alert variant="info">Không tìm thấy nhà cung cấp!</Alert>;
+
+    // Lấy tên user: ưu tiên firstName + lastName, rồi firstName, rồi lastName, rồi User id
+    let userDisplayName = "";
+    if (currentUser) {
+        if (
+            currentUser.firstName &&
+            currentUser.firstName.trim() !== "" &&
+            currentUser.lastName &&
+            currentUser.lastName.trim() !== ""
+        ) {
+            userDisplayName = `${currentUser.firstName} ${currentUser.lastName}`;
+        } else if (currentUser.firstName && currentUser.firstName.trim() !== "") {
+            userDisplayName = currentUser.firstName;
+        } else if (currentUser.lastName && currentUser.lastName.trim() !== "") {
+            userDisplayName = currentUser.lastName;
+        } else {
+            userDisplayName = `User ${currentUser.id || ""}`;
+        }
+    }
+
+    const providerName = provider?.companyName || "";
 
     return (
         <Container style={{ maxWidth: "950px", margin: "2rem auto" }}>
@@ -89,8 +112,30 @@ const ProviderDetail = () => {
                             </tr>
                         </tbody>
                     </Table>
+                    {/* Nút chat với nhà cung cấp */}
+                    {currentUser && currentUser.role !== "PROVIDER" && (
+                        <button
+                            className="btn btn-outline-primary mt-2"
+                            onClick={() => setShowChat(true)}
+                        >
+                            Chat với nhà cung cấp
+                        </button>
+                    )}
                 </Card.Body>
             </Card>
+
+            {/* Sử dụng component ChatWithProvider riêng */}
+            {showChat && (
+                <ChatWithProvider
+                    userId={currentUser?.id}
+                    providerId={providerId}
+                    userName={userDisplayName}
+                    providerName={providerName}
+                    myId={currentUser?.id}
+                    avatarCurrentUser={currentUser?.avatar || "/default-avatar.png"}
+                    onClose={() => setShowChat(false)}
+                />
+            )}
 
             <h3 style={{ fontWeight: "bold", marginBottom: "1.2rem", color: "#0d6efd" }}>Các dịch vụ của nhà cung cấp</h3>
             <Row xs={1} sm={2} md={3} lg={4} className="g-4 mt-2">
@@ -117,7 +162,6 @@ const ProviderDetail = () => {
                 ))}
             </Row>
             {services.length === 0 && <Alert variant="info" className="mt-3">Nhà cung cấp chưa có dịch vụ nào.</Alert>}
-
 
             <ProviderRating providerId={providerId} currentUser={currentUser} onAvgRatingChange={handleAvgRatingChange} />
         </Container>

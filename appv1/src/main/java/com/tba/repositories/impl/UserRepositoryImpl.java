@@ -148,4 +148,20 @@ public class UserRepositoryImpl implements UserRepository {
         return session.createQuery(q).uniqueResult();
     }
 
+    @Override
+    public long countByRoleAndMonthYear(String role, Integer month, Integer year) {
+        Session session = this.factory.getObject().getCurrentSession();
+        String hql = "SELECT COUNT(u) FROM User u WHERE u.role = :role";
+        if (month != null && year != null) {
+            hql += " AND MONTH(u.createdAt) = :month AND YEAR(u.createdAt) = :year";
+        }
+        org.hibernate.query.Query q = session.createQuery(hql);
+        q.setParameter("role", com.tba.enums.UserRole.valueOf(role));
+        if (month != null && year != null) {
+            q.setParameter("month", month);
+            q.setParameter("year", year);
+        }
+        return (Long) q.getSingleResult();
+    }
+
 }

@@ -30,4 +30,5 @@ public interface ServicePostService {
     
     List<ServicePost> getServicePostsByProviderIdPaged(int providerId, int page, int size);
     long countServicePostsByProviderId(int providerId);
+    
 }
