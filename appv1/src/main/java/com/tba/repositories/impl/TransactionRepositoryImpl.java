@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import com.tba.enums.PaymentStatus;
 
 @Repository
 public class TransactionRepositoryImpl implements TransactionRepository {
@@ -73,5 +74,26 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
         List<Transaction> result = session.createQuery(cq).setMaxResults(1).getResultList();
         return result.isEmpty() ? null : result.get(0);
+    }
+
+    @Override
+    public List<Object[]> getTopProvidersRevenue(Integer month, Integer year, int limit) {
+        Session session = this.factory.getObject().getCurrentSession();
+        String hql = "SELECT s.serviceProviderId.id, s.serviceProviderId.companyName, SUM(t.totalAmount) "
+                + "FROM Transaction t JOIN t.servicePostId s "
+                + "WHERE t.paymentStatus = :status";
+        if (month != null && year != null) {
+            hql += " AND MONTH(t.createdDate) = :month AND YEAR(t.createdDate) = :year";
+        }
+        hql += " GROUP BY s.serviceProviderId.id, s.serviceProviderId.companyName ORDER BY SUM(t.totalAmount) DESC";
+        org.hibernate.query.Query q = session.createQuery(hql);
+        q.setParameter("status", com.tba.enums.PaymentStatus.PAID); 
+
+        if (month != null && year != null) {
+            q.setParameter("month", month);
+            q.setParameter("year", year);
+        }
+        q.setMaxResults(limit);
+        return q.getResultList();
     }
 }

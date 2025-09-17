@@ -36,4 +36,6 @@ public interface UserRepository {
     User getUserById(Integer id);
     
     User getUserByProviderId(Integer providerId);
+    
+    long countByRoleAndMonthYear(String role, Integer month, Integer year);
 }

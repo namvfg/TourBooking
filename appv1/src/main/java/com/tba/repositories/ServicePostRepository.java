@@ -34,6 +34,13 @@ public interface ServicePostRepository {
     List<ServicePost> getServicePostsByProviderIdPaged(int providerId, int page, int size);
     long countServicePostsByProviderId(int providerId);
     
+    long countServicePostsByMonthYear(Integer month, Integer year);
+    
+
+    Map<String, Long> countServiceByType(Integer month, Integer year);
+    
+    Map<String, Long> revenueByServiceType(Integer month, Integer year);
+    
 }
 
 

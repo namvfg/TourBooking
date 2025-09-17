@@ -21,4 +21,6 @@ public interface TransactionRepository {
     void update(Transaction transaction);
     
     Transaction getTransactionByTransactionCode(String transactionCode);
+    
+    List<Object[]> getTopProvidersRevenue(Integer month, Integer year, int limit);
 }
