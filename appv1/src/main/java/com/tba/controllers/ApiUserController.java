@@ -6,6 +6,7 @@ package com.tba.controllers;
 
 import com.tba.dto.request.LoginRequestDTO;
 import com.tba.dto.request.UserRegisterRequestDTO;
+import com.tba.dto.request.UserUpdateRequestDTO;
 import com.tba.dto.response.UserResponseDTO;
 import com.tba.enums.UserRole;
 import com.tba.pojo.User;
@@ -21,11 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -38,6 +41,8 @@ public class ApiUserController {
 
     @Autowired
     private CloudinaryService cloudinaryService;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     private UserService userService;
 
@@ -85,7 +90,7 @@ public class ApiUserController {
                         "error", "Số điện thoại đã được sử dụng!"
                 ));
             }
-            
+
             String imageUrl;
             try {
                 imageUrl = cloudinaryService.uploadImage(dto.getAvatar(), "avatar")
@@ -140,6 +145,101 @@ public class ApiUserController {
         );
 
         return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/secure/users/change-password")
+    public ResponseEntity<?> changePassword(
+            @RequestParam String oldPassword,
+            @RequestParam String newPassword,
+            Principal principal) {
+
+        String username = principal.getName();
+        User user = userService.getUserByUsername(username);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Không tìm thấy người dùng"));
+        }
+
+        // So sánh mật khẩu cũ
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Mật khẩu cũ không chính xác!"));
+        }
+
+        // Validate mật khẩu mới
+        if (!newPassword.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", "Mật khẩu mới phải từ 6 ký tự và chứa cả chữ lẫn số"));
+        }
+
+        // Encode và cập nhật
+        String hashed = passwordEncoder.encode(newPassword);
+        user.setPassword(hashed);
+        user.setUpdatedAt(new Date());
+        userService.updateUser(user);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Đổi mật khẩu thành công!"
+        ));
+    }
+
+    @PostMapping("/secure/users/update-profile")
+    public ResponseEntity<?> updateUserProfile(
+            @Valid @ModelAttribute UserUpdateRequestDTO dto,
+            Principal principal) {
+
+        String username = principal.getName();
+        User user = userService.getUserByUsername(username);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Không tìm thấy người dùng"));
+        }
+
+        // Cập nhật các trường văn bản
+        if (dto.getFirstName() != null) {
+            user.setFirstName(dto.getFirstName());
+        }
+
+        if (dto.getLastName() != null) {
+            user.setLastName(dto.getLastName());
+        }
+
+        if (dto.getEmail() != null) {
+            user.setEmail(dto.getEmail());
+        }
+
+        if (dto.getAddress() != null) {
+            user.setAddress(dto.getAddress());
+        }
+
+        if (dto.getPhoneNumber() != null) {
+            user.setPhoneNumber(dto.getPhoneNumber());
+        }
+
+        // Cập nhật avatar nếu có
+        if (dto.getAvatar() != null && !dto.getAvatar().isEmpty()) {
+            try {
+                String imageUrl = cloudinaryService
+                        .uploadImage(dto.getAvatar(), "avatar")
+                        .get("secure_url").toString();
+                user.setAvatar(imageUrl);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return ResponseEntity.internalServerError()
+                        .body(Map.of("error", "Lỗi upload ảnh: " + ex.getMessage()));
+            }
+        }
+
+        user.setUpdatedAt(new Date());
+        userService.updateUser(user);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Cập nhật thông tin người dùng thành công!"
+        ));
     }
 
 }

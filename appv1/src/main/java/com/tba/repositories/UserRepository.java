@@ -38,4 +38,6 @@ public interface UserRepository {
     User getUserByProviderId(Integer providerId);
     
     long countByRoleAndMonthYear(String role, Integer month, Integer year);
+    
+    void updateUser(User user);
 }

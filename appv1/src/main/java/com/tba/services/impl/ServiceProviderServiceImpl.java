@@ -64,4 +64,10 @@ public class ServiceProviderServiceImpl implements ServiceProviderService {
     public boolean existsByCompanyName(String companyName) {
         return this.serviceProviderRepository.existsByCompanyName(companyName);
     }
+
+    @Override
+    public void updateProvider(User u, ServiceProvider provider) {
+        this.userService.updateUser(u);
+        this.serviceProviderRepository.updateProvider(provider);
+    }
 }

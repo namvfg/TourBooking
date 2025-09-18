@@ -87,7 +87,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         }
         hql += " GROUP BY s.serviceProviderId.id, s.serviceProviderId.companyName ORDER BY SUM(t.totalAmount) DESC";
         org.hibernate.query.Query q = session.createQuery(hql);
-        q.setParameter("status", com.tba.enums.PaymentStatus.PAID); 
+        q.setParameter("status", com.tba.enums.PaymentStatus.PAID);
 
         if (month != null && year != null) {
             q.setParameter("month", month);
@@ -95,5 +95,38 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         }
         q.setMaxResults(limit);
         return q.getResultList();
+    }
+
+    @Override
+    public List<Transaction> getTransactionsByPostId(int postId) {
+        Session session = factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Transaction> query = builder.createQuery(Transaction.class);
+        Root<Transaction> root = query.from(Transaction.class);
+
+        query.select(root);
+        query.where(
+                builder.and(
+                        builder.equal(root.get("servicePostId").get("id"), postId),
+                        builder.equal(root.get("paymentStatus"), PaymentStatus.PAID)
+                )
+        );
+        query.orderBy(builder.desc(root.get("createdDate")));
+
+        return session.createQuery(query).getResultList();
+    }
+
+    @Override
+    public List<Transaction> getTransactionsByUserId(int userId) {
+        Session session = factory.getObject().getCurrentSession();
+
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Transaction> query = builder.createQuery(Transaction.class);
+        Root<Transaction> root = query.from(Transaction.class);
+
+        query.select(root)
+                .where(builder.equal(root.get("userId").get("id"), userId));
+
+        return session.createQuery(query).getResultList();
     }
 }

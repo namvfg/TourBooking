@@ -7,6 +7,8 @@ package com.tba.controllers;
 import com.tba.components.MomoConfig;
 import com.tba.components.VNPayConfig;
 import com.tba.dto.request.TransactionRequestDTO;
+import com.tba.dto.response.TransactionResponseDTO;
+import com.tba.dto.response.TransactionUserResponseDTO;
 import com.tba.enums.PaymentStatus;
 import com.tba.pojo.ServicePost;
 import com.tba.pojo.Transaction;
@@ -20,10 +22,14 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -126,6 +132,60 @@ public class ApiTransactionController {
                 "payUrl", payUrl,
                 "message", "Tạo giao dịch thành công, chuyển hướng đến cổng thanh toán!"
         ));
+    }
+
+    @GetMapping("/secure/transaction/service-post/{postId}")
+    public ResponseEntity<?> getTransactionsByServicePost(@PathVariable("postId") int postId, Principal principal) {
+        User currentUser = userService.getUserByUsername(principal.getName());
+        ServicePost post = servicePostService.getServicePostById(postId);
+        if (post == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Service post not found");
+        }
+
+        if (post.getServiceProviderId() == null || !post.getServiceProviderId().getUserId().getId().equals(currentUser.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Bạn không có quyền truy cập giao dịch này!");
+        }
+
+        List<Transaction> transactions = transactionService.getTransactionsByPostId(postId);
+
+        List<TransactionResponseDTO> result = transactions.stream().map(t -> {
+            User u = t.getUserId();
+            return new TransactionResponseDTO(
+                    t.getId(),
+                    t.getSlotQuantity(),
+                    t.getTotalAmount(),
+                    t.getCreatedDate(),
+                    u.getUsername(),
+                    u.getEmail(),
+                    u.getLastName() + " " + u.getFirstName()
+            );
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/secure/transaction/user")
+    public ResponseEntity<?> getTransactionsByUser(Principal principal) {
+        User user = userService.getUserByUsername(principal.getName());
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Bạn chưa đăng nhập!");
+        }
+
+        List<Transaction> transactions = transactionService.getTransactionsByUserId(user.getId());
+
+        List<TransactionUserResponseDTO> result = transactions.stream().map(t -> {
+            return new TransactionUserResponseDTO(
+                    t.getId(),
+                    t.getTransactionCode(),
+                    t.getServicePostId().getName(),
+                    t.getTotalAmount(),
+                    t.getTransactionType().toString(),
+                    t.getPaymentStatus().toString(),
+                    t.getCreatedDate()
+            );
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/vnpay-return")
