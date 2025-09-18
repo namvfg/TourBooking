@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ *
+ * @author Admin
+ */
+
 @Controller
 public class ServicePermissionController {
 
@@ -25,7 +30,7 @@ public class ServicePermissionController {
     @Autowired
     private UserService userService;
 
-    // Hiển thị bảng phân quyền dịch vụ (dựa trên từng quyền)
+
     @GetMapping("/admin/permissions")
     public String listPermissions(Model model) {
         List<ServicePermission> permissions = permissionService.getAllPermissions();
@@ -35,7 +40,7 @@ public class ServicePermissionController {
         return "table_permission";
     }
 
-    // Hiển thị form duyệt/cập nhật trạng thái quyền cho từng service type của provider
+
     @GetMapping("/admin/permission/update/{id}")
     public String showUpdatePermission(@PathVariable("id") Integer id, Model model) {
         ServicePermission permission = permissionService.getPermissionById(id);
@@ -45,7 +50,7 @@ public class ServicePermissionController {
         return "form_permission";
     }
 
-    // Xử lý cập nhật trạng thái quyền
+
     @PostMapping("/admin/permission/update")
     public String updatePermission(@ModelAttribute("permission") ServicePermission permission) {
         ServicePermission old = permissionService.getPermissionById(permission.getId());
@@ -57,7 +62,7 @@ public class ServicePermissionController {
 
         User u = userService.getUserByProviderId(permission.getServiceProviderId().getId());
         
-        // Gửi email khi quyền được duyệt (ACTIVE)
+
         if (permission.getState()==State.ACTIVE) {
             String to = u.getEmail();
             String companyName = permission.getServiceProviderId().getCompanyName();

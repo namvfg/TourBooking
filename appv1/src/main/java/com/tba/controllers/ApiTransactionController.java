@@ -80,7 +80,7 @@ public class ApiTransactionController {
 
         BigDecimal total = post.getPrice().multiply(BigDecimal.valueOf(dto.getSlotQuantity()));
 
-        // Tạo transaction code duy nhất
+
         String transactionCode = "TXN" + System.currentTimeMillis();
 
         Transaction tx = new Transaction();
@@ -217,11 +217,11 @@ public class ApiTransactionController {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace(); // log lỗi server
-            status = "FAILED";   // fallback
+            e.printStackTrace(); 
+            status = "FAILED";   
         }
 
-        // redirect về frontend trong mọi trường hợp
+
         String redirectUrl = String.format(
                 "http://localhost:3000/payment-return?transactionCode=%s&status=%s",
                 txnRef != null ? txnRef : "UNKNOWN", status
@@ -243,7 +243,7 @@ public class ApiTransactionController {
 
             if (resultCode == 0) {
                 tx.setPaymentStatus(PaymentStatus.PAID);
-                // chỉ trừ slot khi thanh toán thành công
+
                 ServicePost sp = servicePostService.getServicePostById(tx.getServicePostId().getId());
                 sp.setAvailableSlot(sp.getAvailableSlot() - tx.getSlotQuantity());
                 transactionService.update(sp, tx);

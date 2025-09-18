@@ -19,7 +19,7 @@ import java.util.Date;
  * @author Admin
  */
 public class JwtUtils {
-    private static final String SECRET = "12345678901234567890123456789012"; // 32 ký tự (AES key)
+    private static final String SECRET = "12345678901234567890123456789012"; 
     private static final long EXPIRATION_MS = 86400000; // 1 ngày
 
     public static String generateToken(String username, String role) throws Exception {

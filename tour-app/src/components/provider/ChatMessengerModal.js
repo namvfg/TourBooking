@@ -3,7 +3,7 @@ import { Modal } from "react-bootstrap";
 import ChatList from "./ChatList";
 import ChatBox from "../user/ChatBox";
 
-// Modal lớn kiểu Messenger: trái là danh sách chat, phải là đoạn chat chi tiết
+
 const ChatMessengerModal = ({ show, onHide, mode, currentId, currentUser }) => {
   const [selectedChat, setSelectedChat] = useState(null);
 

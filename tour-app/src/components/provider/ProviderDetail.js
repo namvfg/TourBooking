@@ -41,7 +41,7 @@ const ProviderDetail = () => {
         fetchProvider();
     }, [providerId]);
 
-    // Callback nhận avgRating từ ProviderRating
+ 
     const handleAvgRatingChange = (avg, count) => {
         setAvgRating(avg);
         setRatingCount(count);
@@ -51,7 +51,7 @@ const ProviderDetail = () => {
     if (error) return <Alert variant="danger">{error}</Alert>;
     if (!provider) return <Alert variant="info">Không tìm thấy nhà cung cấp!</Alert>;
 
-    // Lấy tên user: ưu tiên firstName + lastName, rồi firstName, rồi lastName, rồi User id
+
     let userDisplayName = "";
     if (currentUser) {
         if (
@@ -86,7 +86,7 @@ const ProviderDetail = () => {
                     <Card.Title style={{ fontSize: "2.2rem", fontWeight: "bold", color: "#0d6efd", marginBottom: "0.2rem" }}>
                         {provider.companyName}
                     </Card.Title>
-                    {/* Hiển thị trung bình sao ngay dưới tên công ty */}
+  
                     {avgRating && (
                         <div style={{ fontSize: "1.25rem", color: "#FFD700", fontWeight: 600, marginBottom: "0.7rem" }}>
                             ★ {avgRating} / 5 {ratingCount > 0 && <span style={{ color: "#444", fontWeight: 400 }}>({ratingCount} đánh giá)</span>}
@@ -112,7 +112,7 @@ const ProviderDetail = () => {
                             </tr>
                         </tbody>
                     </Table>
-                    {/* Nút chat với nhà cung cấp */}
+
                     {currentUser && currentUser.role !== "PROVIDER" && (
                         <button
                             className="btn btn-outline-primary mt-2"
@@ -124,7 +124,7 @@ const ProviderDetail = () => {
                 </Card.Body>
             </Card>
 
-            {/* Sử dụng component ChatWithProvider riêng */}
+
             {showChat && (
                 <ChatWithProvider
                     userId={currentUser?.id}

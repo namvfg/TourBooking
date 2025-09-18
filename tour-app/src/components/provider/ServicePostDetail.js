@@ -78,7 +78,7 @@ const ServicePostDetail = () => {
         if (isOwner) {
             loadBookings();
         }
-        // eslint-disable-next-line
+
     }, [post]);
 
     const handleDelete = async () => {

@@ -13,7 +13,7 @@ const UpdateProfile = () => {
     email: "",
     address: "",
     phoneNumber: "",
-    companyName: "", // chỉ dùng nếu là PROVIDER
+    companyName: "", 
   });
   const [avatarFile, setAvatarFile] = useState(null);
   const [preview, setPreview] = useState(null);

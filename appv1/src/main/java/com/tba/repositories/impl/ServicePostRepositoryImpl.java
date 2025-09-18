@@ -132,7 +132,7 @@ public class ServicePostRepositoryImpl implements ServicePostRepository {
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(cb.equal(root.get("isDeleted"), false));
 
-        // FILTER giống hệt như getServicePosts
+
         String keyword = params.get("keyword");
         if (keyword != null && !keyword.isEmpty()) {
             predicates.add(cb.like(cb.lower(root.get("name")), "%" + keyword.toLowerCase() + "%"));

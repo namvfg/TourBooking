@@ -18,20 +18,20 @@ public class ServicePostResponseDTO {
     private Integer serviceProviderId;
     private String companyName;
 
-    // ROOM fields
+
     private Date roomStartDate;
     private Date roomEndDate;
 
-    // TOUR fields
+
     private Date tourStartDate;
     private Date tourEndDate;
 
-    // TRANSPORTATION fields
+
     private String transportType;
     private Date transportStartDate;
     private String destination;
 
-    // Getter & Setter
+
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 

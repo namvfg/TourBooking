@@ -9,8 +9,8 @@ import { useNavigate } from "react-router-dom";
 const Profile = () => {
     const [user] = useContext(MyUserContext);
     const [serviceTypes, setServiceTypes] = useState([]);
-    const [selectedTypes, setSelectedTypes] = useState([]); // để gửi request
-    const [existingPermissions, setExistingPermissions] = useState([]); // quyền ACTIVE đã có
+    const [selectedTypes, setSelectedTypes] = useState([]); 
+    const [existingPermissions, setExistingPermissions] = useState([]); 
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -140,7 +140,7 @@ const Profile = () => {
                                                 type="checkbox"
                                                 label={type}
                                                 checked={alreadyHas || selectedTypes.includes(type)}
-                                                disabled={alreadyHas} // readonly nếu đã có quyền
+                                                disabled={alreadyHas} 
                                                 onChange={() => toggleType(type)}
                                             />
                                         );

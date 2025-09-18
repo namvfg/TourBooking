@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { db } from "../configs/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 
-// mode: "user" hoặc "provider", currentId: id của user hoặc provider hiện tại
 const ChatList = ({ mode, currentId, currentUser, onSelectChat, selectedChat }) => {
   const [chats, setChats] = useState([]);
 

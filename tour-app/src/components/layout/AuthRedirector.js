@@ -38,7 +38,7 @@ const AuthRedirector = ({ onLoaded }) => {
                     } else if (userData.role === "ADMIN") {
                         navigate("/profile");
                     } else {
-                        navigate("/"); // đã login rồi vẫn ở /
+                        navigate("/"); 
                     }
                 }
             } catch (err) {

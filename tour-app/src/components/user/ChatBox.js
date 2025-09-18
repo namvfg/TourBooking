@@ -11,7 +11,7 @@ import {
   setDoc
 } from "firebase/firestore";
 
-// Thêm prop avatarCurrentUser cho lưu avatar người gửi
+
 const ChatBox = ({
   userId,
   providerId,
@@ -41,7 +41,7 @@ const ChatBox = ({
   const sendMessage = async (e) => {
     e.preventDefault();
     if (input.trim() === "") return;
-    // Lưu tên vào document chat
+
     await setDoc(doc(db, "chats", chatId), {
       userId,
       providerId,
@@ -54,12 +54,12 @@ const ChatBox = ({
       senderId: myId,
       content: input,
       timestamp: serverTimestamp(),
-      avatar: avatarCurrentUser || "/default-avatar.png", // avatar người gửi
+      avatar: avatarCurrentUser || "/default-avatar.png", 
     });
     setInput("");
   };
 
-  // Tiêu đề động
+
   let title = "";
   if (role === "PROVIDER") {
     title = `Chat với ${userName || "khách hàng"}`;
@@ -67,7 +67,7 @@ const ChatBox = ({
     title = `Chat với ${providerName || "nhà cung cấp"}`;
   }
 
-  // Hàm format thời gian
+
   const formatTime = (ts) => {
     if (!ts) return "";
     try {

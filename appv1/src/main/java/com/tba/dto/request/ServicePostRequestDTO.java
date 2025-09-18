@@ -13,20 +13,20 @@ public class ServicePostRequestDTO {
     private String serviceType;
     private Integer serviceProviderId;
 
-    // ROOM fields
+
     private Date roomStartDate;
     private Date roomEndDate;
 
-    // TOUR fields
+
     private Date tourStartDate;
     private Date tourEndDate;
 
-    // TRANSPORTATION fields
+
     private String transportType;
     private Date transportStartDate;
     private String destination;
 
-    // Getter & Setter
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 

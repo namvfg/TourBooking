@@ -52,24 +52,24 @@ public class JwtFilter implements Filter {
         );
 
         if (requestURI.equals(contextPath + "/api/login") || requestURI.equals(contextPath + "/api/register")
-                || !requestURI.startsWith(contextPath + "/api/secure/") // Nếu không phải API secure
+                || !requestURI.startsWith(contextPath + "/api/secure/") 
                 ) {
             chain.doFilter(httpRequest, httpResponse);
             return;
         }
 
-        // Kiểm tra nếu đường dẫn bắt đầu với /api/ (cần xác thực)
+
         if (requestURI.startsWith(contextPath + "/api/")) {
             String header = httpRequest.getHeader("Authorization");
 
-            // Kiểm tra xem header Authorization có tồn tại và bắt đầu bằng "Bearer "
+
             if (header == null || !header.startsWith("Bearer ")) {
                 httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED,
                         "Missing or invalid Authorization header.");
                 return;
             } else {
-                // Lấy token từ header
-                String token = header.substring(7);// Bỏ qua "Bearer " để lấy token
+
+                String token = header.substring(7);
                 try {
                     String[] claims = JwtUtils.validateTokenAndGetUsername(token);
                     if (claims != null) {
@@ -93,7 +93,6 @@ public class JwtFilter implements Filter {
             }
         }
 
-        // Cho phép các yêu cầu không phải API đi qua (ví dụ: trang HTML, CSS, JS)
         chain.doFilter(request, response);
     }
 }
