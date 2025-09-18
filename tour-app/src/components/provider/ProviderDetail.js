@@ -5,7 +5,7 @@ import { Card, Row, Col, Spinner, Alert, Container, Table } from "react-bootstra
 import { MyUserContext } from "../configs/Context";
 import ProviderRating from "./ProviderRating";
 import Apis from "../configs/Apis";
-import ChatWithProvider from "./ChatWithProvider"; // <-- import component mới
+import ChatWithProvider from "./ChatWithProvider"; 
 
 const ProviderDetail = () => {
     const { providerId } = useParams();

@@ -29,7 +29,6 @@ const AddServicePost = () => {
     const [loading, setLoading] = useState(false);
     const [serviceTypeOptions, setServiceTypeOptions] = useState([]);
 
-    // Trường chi tiết động
     const [roomStartDate, setRoomStartDate] = useState("");
     const [roomEndDate, setRoomEndDate] = useState("");
     const [tourStartDate, setTourStartDate] = useState("");
@@ -99,7 +98,6 @@ const AddServicePost = () => {
             formData.append("serviceType", serviceType);
             formData.append("serviceProviderId", parseInt(providerId));
 
-            // Gửi các trường detail tuỳ loại
             if (serviceType === "ROOM") {
                 formData.append("roomStartDate", roomStartDate);
                 if (roomEndDate) formData.append("roomEndDate", roomEndDate);
@@ -136,7 +134,7 @@ const AddServicePost = () => {
             else if (error.response?.data)
                 msg = error.response.data;
             setErr(msg);
-            toast.error(msg); // Thông báo thất bại
+            toast.error(msg); 
         } finally {
             setLoading(false);
         }
@@ -192,6 +190,7 @@ const AddServicePost = () => {
                     <Form.Label>Giá (VNĐ)</Form.Label>
                     <Form.Control
                         type="number"
+                        min="0"
                         value={price}
                         onChange={e => setPrice(e.target.value)}
                         required
@@ -205,7 +204,7 @@ const AddServicePost = () => {
 
                 <Form.Group className="mb-3">
                     <Form.Label>Số slot còn</Form.Label>
-                    <Form.Control type="number" value={availableSlot} onChange={e => setAvailableSlot(e.target.value)} required />
+                    <Form.Control type="number" min="0" value={availableSlot} onChange={e => setAvailableSlot(e.target.value)} required />
                 </Form.Group>
 
                 <Form.Group className="mb-3">
@@ -223,7 +222,6 @@ const AddServicePost = () => {
                     </Form.Select>
                 </Form.Group>
 
-                {/* Các trường chi tiết động theo loại dịch vụ */}
                 {serviceType === "ROOM" && (
                     <>
                         <Form.Group className="mb-3">
