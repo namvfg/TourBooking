@@ -12,15 +12,20 @@ import com.tba.pojo.Transaction;
 import java.util.List;
 
 public interface TransactionRepository {
+
     List<Transaction> getAllTransactions();
-    
+
     void deleteTransaction(Integer id);
-    
+
     void add(Transaction transaction);
-    
+
     void update(Transaction transaction);
-    
+
+    List<Transaction> getTransactionsByPostId(int postId);
+
     Transaction getTransactionByTransactionCode(String transactionCode);
-    
+
+    List<Transaction> getTransactionsByUserId(int userId);
+
     List<Object[]> getTopProvidersRevenue(Integer month, Integer year, int limit);
 }

@@ -9,7 +9,6 @@ const Header = () => {
     const [user, dispatch] = useContext(MyUserContext);
     const [showChatModal, setShowChatModal] = useState(false);
 
- 
     let chatMode = null, chatCurrentId = null;
     if (user) {
         if (user.role === "USER") {
@@ -22,10 +21,26 @@ const Header = () => {
         }
     }
 
+    const handleBrandClick = (e) => {
+        e.preventDefault();
+        if (user?.role === "PROVIDER") {
+            navigate("/provider-home");
+        } else {
+            navigate("/");
+        }
+    };
+
     return (
         <Navbar bg='primary' data-bs-theme='dark' expand="lg" className="bg-body-tertiary">
             <Container>
-                <Navbar.Brand as={Link} to="/" className="fw-bold">Đông Thành</Navbar.Brand>
+                <Navbar.Brand
+                    href="#"
+                    onClick={handleBrandClick}
+                    className="fw-bold"
+                >
+                    Đông Thành
+                </Navbar.Brand>
+
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ms-auto d-flex align-items-center">
@@ -46,6 +61,12 @@ const Header = () => {
                                     currentUser={user}
                                 />
                             </>
+                        )}
+
+                        {user && user.role === "USER" && (
+                            <Nav.Link as={Link} to="/user-transactions" className="btn btn-outline-warning me-2">
+                                <i className="bi bi-receipt"></i> Lịch sử giao dịch
+                            </Nav.Link>
                         )}
 
                         {user ? (
@@ -71,6 +92,8 @@ const Header = () => {
                                 <Nav.Link as={Link} to="/register">Đăng ký</Nav.Link>
                             </>
                         )}
+
+
                     </Nav>
                 </Navbar.Collapse>
             </Container>

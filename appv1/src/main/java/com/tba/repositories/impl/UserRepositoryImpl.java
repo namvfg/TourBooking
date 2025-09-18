@@ -164,4 +164,9 @@ public class UserRepositoryImpl implements UserRepository {
         return (Long) q.getSingleResult();
     }
 
+    @Override
+    public void updateUser(User user) {
+        Session session = factory.getObject().getCurrentSession();
+        session.merge(user);
+    }
 }

@@ -24,7 +24,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
-    
+
     @Autowired
     private ServicePostService servicePostService;
 
@@ -52,5 +52,15 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Transaction getTransactionByTransactionCode(String transactionCode) {
         return this.transactionRepository.getTransactionByTransactionCode(transactionCode);
+    }
+
+    @Override
+    public List<Transaction> getTransactionsByPostId(int postId) {
+        return transactionRepository.getTransactionsByPostId(postId);
+    }
+
+    @Override
+    public List<Transaction> getTransactionsByUserId(int userId) {
+        return transactionRepository.getTransactionsByUserId(userId);
     }
 }

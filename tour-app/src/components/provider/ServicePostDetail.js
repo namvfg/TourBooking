@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Container, Row, Col, Card, Spinner, Alert, Button } from "react-bootstrap";
+import { Container, Row, Col, Card, Spinner, Alert, Button, Table } from "react-bootstrap";
 import parse from "html-react-parser";
 import { MyUserContext } from "../configs/Context";
 import { toast } from "react-toastify";
 import cookie from "react-cookies";
 import Apis, { endpoints, authApis } from "../configs/Apis";
 import EditServicePostModal from "./EditServicePostModal";
+import cookies from 'react-cookies';
 
 const formatDate = (dateVal) => {
     if (!dateVal) return "";
@@ -28,7 +29,17 @@ const ServicePostDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [showEditModal, setShowEditModal] = useState(false);
+    const [bookings, setBookings] = useState([]);
+    const [loadingBookings, setLoadingBookings] = useState(false);
+    const [errorBookings, setErrorBookings] = useState("");
     const navigate = useNavigate();
+
+    const isOwner =
+        user &&
+        user.role === "PROVIDER" &&
+        user.provider &&
+        post &&
+        Number(user.provider.providerId) === Number(post.serviceProviderId);
 
     const loadDetail = async () => {
         setLoading(true);
@@ -44,17 +55,31 @@ const ServicePostDetail = () => {
         setLoading(false);
     };
 
+    const loadBookings = async () => {
+        if (!isOwner) return;
+
+        setLoadingBookings(true);
+        setErrorBookings("");
+        try {
+            const token = cookies.load("token");
+            const res = await authApis(token).get(endpoints["provider-transactions"](id));
+            setBookings(res.data);
+        } catch (err) {
+            setErrorBookings("Không thể tải danh sách người đặt dịch vụ!");
+        }
+        setLoadingBookings(false);
+    };
+
     useEffect(() => {
         loadDetail();
-        // eslint-disable-next-line
     }, [id, user]);
 
-    const isOwner =
-        user &&
-        user.role === "PROVIDER" &&
-        user.provider &&
-        post &&
-        Number(user.provider.providerId) === Number(post.serviceProviderId);
+    useEffect(() => {
+        if (isOwner) {
+            loadBookings();
+        }
+        // eslint-disable-next-line
+    }, [post]);
 
     const handleDelete = async () => {
         if (!window.confirm("Bạn chắc chắn muốn xóa dịch vụ này?")) return;
@@ -79,10 +104,10 @@ const ServicePostDetail = () => {
 
     return (
         <Container className="my-5">
-            <Card className="shadow overflow-hidden">
+            <Card className="shadow overflow-hidden mb-4">
                 <Row className="g-0">
                     {post.image && (
-                        <Col xs={12} md={5} className={post.image ? "d-block" : "d-none d-md-block"}>
+                        <Col xs={12} md={5}>
                             <img
                                 src={post.image}
                                 alt={post.name}
@@ -92,7 +117,7 @@ const ServicePostDetail = () => {
                         </Col>
                     )}
                     <Col md={post.image ? 7 : 12}>
-                        <div style={{ padding: "2rem", maxHeight: "500px", overflowY: "auto" }}>
+                        <div style={{ padding: "2rem", maxHeight: "700px", overflowY: "auto" }}>
                             <h4
                                 className="text-primary fw-bold mb-2"
                                 style={{ cursor: "pointer", textDecoration: "underline" }}
@@ -101,11 +126,9 @@ const ServicePostDetail = () => {
                                 {post.companyName}
                             </h4>
                             <h2 className="fw-bold mb-3">{post.name}</h2>
-
                             <div className="text-success fs-5 fw-bold mb-3">
                                 {post.price ? Number(post.price).toLocaleString("vi-VN") : 0} VNĐ
                             </div>
-
                             <p><b>Địa chỉ:</b> {post.address || ""}</p>
                             <p><b>Loại:</b> {post.serviceType || ""}</p>
                             <p><b>Ngày tạo:</b> {formatDate(post.createdDate)}</p>
@@ -151,18 +174,65 @@ const ServicePostDetail = () => {
                                 </div>
                             )}
 
-                            <div className="mt-4 text-end">
-                                <button
-                                    className="btn btn-primary"
-                                    onClick={() => navigate(`/payment?postId=${post.id}`)}
-                                >
-                                    Đặt vé
-                                </button>
-                            </div>
+                            {user?.role === "USER" && (
+                                <div className="mt-4 d-flex justify-content-end gap-2">
+                                    <Button
+                                        variant="primary"
+                                        onClick={() => navigate(`/payment?postId=${post.id}`)}
+                                    >
+                                        Đặt vé
+                                    </Button>
+
+                                    <Button
+                                        variant="outline-primary"
+                                        onClick={() => navigate(`/compare/${post.id}`)}
+                                    >
+                                        So sánh
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     </Col>
                 </Row>
             </Card>
+
+            {isOwner && (
+                <Card className="shadow mb-4">
+                    <Card.Header className="fw-bold">Danh sách người đã đặt</Card.Header>
+                    <Card.Body style={{ maxHeight: "300px", overflowY: "auto" }}>
+                        {loadingBookings ? (
+                            <Spinner animation="border" variant="primary" />
+                        ) : errorBookings ? (
+                            <Alert variant="danger">{errorBookings}</Alert>
+                        ) : bookings.length === 0 ? (
+                            <Alert variant="info">Chưa có ai đặt dịch vụ này.</Alert>
+                        ) : (
+                            <Table bordered hover responsive>
+                                <thead>
+                                    <tr>
+                                        <th>Họ tên</th>
+                                        <th>Email</th>
+                                        <th>Số slot</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Ngày đặt</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {bookings.map((b, idx) => (
+                                        <tr key={idx}>
+                                            <td>{b.fullName}</td>
+                                            <td>{b.email}</td>
+                                            <td>{b.slotQuantity}</td>
+                                            <td>{Number(b.totalAmount).toLocaleString("vi-VN")} VNĐ</td>
+                                            <td>{formatDate(b.createdDate)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </Table>
+                        )}
+                    </Card.Body>
+                </Card>
+            )}
 
             <EditServicePostModal
                 show={showEditModal}

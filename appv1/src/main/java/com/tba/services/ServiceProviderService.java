@@ -24,6 +24,8 @@ public interface ServiceProviderService {
     void addProvider(User u, ServiceProvider p);
 
     void updateProvider(ServiceProvider provider);
+    
+    void updateProvider(User u, ServiceProvider provider);
 
     ServiceProvider getProviderById(Integer id);
     

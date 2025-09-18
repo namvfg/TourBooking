@@ -4,9 +4,7 @@
  */
 package com.tba.dto.request;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,17 +12,17 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author Admin
  */
-public class ProviderRegisterRequestDTO extends UserRegisterRequestDTO{
+public class ProviderUpdateRequestDTO extends UserUpdateRequestDTO {
 
     @NotBlank(message = "Tên công ty không được để trống")
     @Size(min = 2, max = 50, message = "Tên công ty phải từ 2 đến 20 ký tự")
     private String companyName;
 
-    public ProviderRegisterRequestDTO() {
+    public ProviderUpdateRequestDTO() {
     }
 
-    public ProviderRegisterRequestDTO(String companyName, String firstName, String lastName, String email, String username, String password, MultipartFile avatar, String address, String phoneNumber) {
-        super(firstName, lastName, email, username, password, avatar, address, phoneNumber);
+    public ProviderUpdateRequestDTO(String companyName, String firstName, String lastName, String email, String address, String phoneNumber, MultipartFile avatar) {
+        super(firstName, lastName, email, address, phoneNumber, avatar);
         this.companyName = companyName;
     }
 

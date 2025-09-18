@@ -4,6 +4,7 @@ import { Card, Container, Button, Row, Col, Form, Spinner } from "react-bootstra
 import Apis, { authApis, endpoints } from "../configs/Apis";
 import cookie from "react-cookies";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
     const [user] = useContext(MyUserContext);
@@ -11,11 +12,11 @@ const Profile = () => {
     const [selectedTypes, setSelectedTypes] = useState([]); // để gửi request
     const [existingPermissions, setExistingPermissions] = useState([]); // quyền ACTIVE đã có
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // lấy danh sách serviceTypes
                 const resTypes = await Apis.get(endpoints["service-types"]);
                 if (Array.isArray(resTypes.data)) {
                     setServiceTypes(resTypes.data);
@@ -23,7 +24,6 @@ const Profile = () => {
                     setServiceTypes([]);
                 }
 
-                // nếu user là provider thì gọi API lấy permission hiện có
                 if (user && user.role === "PROVIDER") {
                     const token = cookie.load("token");
                     const resPerms = await authApis(token).get(endpoints["provider-service-permissions"]);
@@ -66,7 +66,6 @@ const Profile = () => {
                 toast.info(`Bỏ qua: ${res.data.skipped.join(", ")}`);
             }
 
-            // Reset sau khi gửi
             setSelectedTypes([]);
         } catch (err) {
             console.error("Request failed", err);
@@ -103,7 +102,8 @@ const Profile = () => {
                                 }}
                             />
                         )}
-                        <Button variant="outline-primary" size="sm" className="mt-2 w-75 mx-auto d-block">
+                        <Button variant="outline-primary" size="sm" className="mt-2 w-75 mx-auto d-block"
+                            onClick={() => navigate("/update-profile")}>
                             Chỉnh sửa thông tin
                         </Button>
                     </Col>

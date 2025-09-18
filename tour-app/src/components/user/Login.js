@@ -39,13 +39,13 @@ const Login = () => {
                     setLoading(false);
                     return;
                 }
+
                 if (status === "DISABLED") {
                     toast.error(message || "Tài khoản nhà cung cấp đã bị khóa!");
                     setLoading(false);
                     return;
                 }
 
-                // LẤY THÊM provider profile
                 try {
                     const providerRes = await authApis(token).get(endpoints["provider-profile"]);
                     const providerData = providerRes.data;
@@ -54,10 +54,19 @@ const Login = () => {
                     console.error("Failed to fetch provider profile:", err);
                 }
             }
+
             cookie.save("token", token, { path: "/" });
             dispatch({ type: "login", payload: profileData });
             toast.success("Đăng nhập thành công!");
-            navigate("/");
+
+            if (profileData.role === "PROVIDER") {
+                navigate("/provider-home");
+            } else if (profileData.role === "ADMIN") {
+                navigate("/profile"); 
+            } else {
+                navigate("/");
+            }
+
         } catch (err) {
             console.error(err);
             toast.error("Lỗi hệ thống hoặc sai tài khoản/mật khẩu!");

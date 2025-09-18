@@ -135,4 +135,9 @@ public class UserServiceImpl implements UserService {
     public User getUserByProviderId(Integer providerId) {
        return this.userRepository.getUserByProviderId(providerId);
     }
+
+    @Override
+    public void updateUser(User user) {
+        this.userRepository.updateUser(user);
+    }
 }

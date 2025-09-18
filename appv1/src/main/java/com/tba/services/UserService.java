@@ -41,4 +41,6 @@ public interface UserService extends UserDetailsService {
     
     User getUserByProviderId(Integer providerId);
 
+    void updateUser(User user);
+    
 }

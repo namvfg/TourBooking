@@ -10,11 +10,6 @@ const Home = () => {
 
     return (
         <div>
-            {user && user.role === "PROVIDER" && (
-                <Button variant="primary" onClick={() => navigate("/add-service-post")}>
-                    Thêm dịch vụ
-                </Button>
-            )}
             <ServicePostList user={user} />
         </div>
     );

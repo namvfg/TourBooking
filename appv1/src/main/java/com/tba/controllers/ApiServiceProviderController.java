@@ -6,6 +6,7 @@ package com.tba.controllers;
 
 import com.tba.dto.request.ProviderRatingRequestDTO;
 import com.tba.dto.request.ProviderRegisterRequestDTO;
+import com.tba.dto.request.ProviderUpdateRequestDTO;
 import com.tba.dto.request.ServicePermissionRequestDTO;
 import com.tba.dto.response.ProviderRatingResponseDTO;
 import com.tba.dto.response.ServiceProviderResponseDTO;
@@ -331,5 +332,72 @@ public class ApiServiceProviderController {
             providerRatingService.updateRating(rating);
         }
         return ResponseEntity.ok("Đã gửi đánh giá");
+    }
+
+    @PostMapping("/secure/provider/update-profile")
+    public ResponseEntity<?> updateProviderProfile(
+            @Valid @ModelAttribute ProviderUpdateRequestDTO dto,
+            Principal principal) {
+
+        String username = principal.getName();
+        User user = userService.getUserByUsername(username);
+
+        if (user == null || user.getRole() != UserRole.PROVIDER) {
+            return ResponseEntity.status(403).body(Map.of("error", "Bạn không có quyền thực hiện hành động này!"));
+        }
+
+        ServiceProvider provider = user.getServiceProvider();
+        if (provider == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Không tìm thấy thông tin nhà cung cấp"));
+        }
+
+        // Cập nhật user info
+        if (dto.getFirstName() != null) {
+            user.setFirstName(dto.getFirstName());
+        }
+
+        if (dto.getLastName() != null) {
+            user.setLastName(dto.getLastName());
+        }
+
+        if (dto.getEmail() != null) {
+            user.setEmail(dto.getEmail());
+        }
+
+        if (dto.getAddress() != null) {
+            user.setAddress(dto.getAddress());
+        }
+
+        if (dto.getPhoneNumber() != null) {
+            user.setPhoneNumber(dto.getPhoneNumber());
+        }
+
+        // Upload avatar nếu có
+        if (dto.getAvatar() != null && !dto.getAvatar().isEmpty()) {
+            try {
+                String imageUrl = cloudinaryService.uploadImage(dto.getAvatar(), "avatar")
+                        .get("secure_url").toString();
+                user.setAvatar(imageUrl);
+            } catch (Exception ex) {
+                return ResponseEntity.internalServerError()
+                        .body(Map.of("error", "Lỗi upload ảnh: " + ex.getMessage()));
+            }
+        }
+
+        // Cập nhật tên công ty
+        if (dto.getCompanyName() != null) {
+            provider.setCompanyName(dto.getCompanyName());
+        }
+
+        user.setUpdatedAt(new Date());
+        provider.setUpdatedAt(new Date());
+
+        userService.updateUser(user);
+        providerService.updateProvider(provider);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Cập nhật thông tin nhà cung cấp thành công!"
+        ));
     }
 }
