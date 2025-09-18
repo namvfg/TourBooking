@@ -44,7 +44,7 @@ public class IndexController {
         Map<String, Object> stats = statisticsService.getStatistics(month, year);
         model.addAllAttributes(stats);
 
-        // Truyền dữ liệu dạng JSON để render biểu đồ Chart.js phía view
+
         model.addAttribute("serviceTypeCountJson", stats.get("serviceTypeCount"));
         model.addAttribute("revenueByTypeJson", stats.get("revenueByType"));
 

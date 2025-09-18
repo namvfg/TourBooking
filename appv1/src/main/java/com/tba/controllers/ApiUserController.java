@@ -105,10 +105,10 @@ public class ApiUserController {
             user.setEmail(dto.getEmail());
             user.setAddress(dto.getAddress());
             user.setUsername(dto.getUsername());
-            user.setPassword(dto.getPassword()); // cần mã hóa trước khi lưu
+            user.setPassword(dto.getPassword()); 
             user.setPhoneNumber(dto.getPhoneNumber());
             user.setAvatar(imageUrl);
-            user.setRole(UserRole.USER); // default role
+            user.setRole(UserRole.USER);
             user.setCreatedAt(new Date());
             user.setUpdatedAt(new Date());
 
@@ -161,19 +161,19 @@ public class ApiUserController {
                     .body(Map.of("error", "Không tìm thấy người dùng"));
         }
 
-        // So sánh mật khẩu cũ
+
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", "Mật khẩu cũ không chính xác!"));
         }
 
-        // Validate mật khẩu mới
+
         if (!newPassword.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("error", "Mật khẩu mới phải từ 6 ký tự và chứa cả chữ lẫn số"));
         }
 
-        // Encode và cập nhật
+
         String hashed = passwordEncoder.encode(newPassword);
         user.setPassword(hashed);
         user.setUpdatedAt(new Date());
@@ -198,7 +198,7 @@ public class ApiUserController {
                     .body(Map.of("error", "Không tìm thấy người dùng"));
         }
 
-        // Cập nhật các trường văn bản
+
         if (dto.getFirstName() != null) {
             user.setFirstName(dto.getFirstName());
         }
@@ -219,7 +219,7 @@ public class ApiUserController {
             user.setPhoneNumber(dto.getPhoneNumber());
         }
 
-        // Cập nhật avatar nếu có
+
         if (dto.getAvatar() != null && !dto.getAvatar().isEmpty()) {
             try {
                 String imageUrl = cloudinaryService

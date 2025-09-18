@@ -10,7 +10,7 @@ package com.tba.services;
  */
 public interface EmailService {
 
-    // Provider
+
     void sendProviderPending(String to, String companyName);
 
     void sendProviderApproved(String to, String companyName);
@@ -19,7 +19,7 @@ public interface EmailService {
 
     void sendProviderDisabled(String to, String companyName);
 
-    // Permission
+
     void sendPermissionPending(String to, String companyName, String serviceType);
 
     void sendPermissionApproved(String to, String companyName, String serviceType);

@@ -144,7 +144,7 @@ public class ApiServiceProviderController {
 
     @GetMapping("secure/provider/profile")
     public ResponseEntity<?> getProviderProfile(Principal principal) {
-        // Lấy user hiện tại
+
         User u = this.userService.getUserByUsername(principal.getName());
 
         ServiceProvider sp = u.getServiceProvider();
@@ -242,12 +242,12 @@ public class ApiServiceProviderController {
     public ResponseEntity<?> checkProviderStatus(Principal principal) {
         User u = this.userService.getUserByUsername(principal.getName());
 
-        // Nếu user không phải PROVIDER, trả về trạng thái bình thường (hoặc thông báo không liên quan)
+
         if (u == null) {
             return ResponseEntity.badRequest().body(Map.of("error", "Không tìm thấy người dùng!"));
         }
 
-        // Nếu user không phải PROVIDER, trả về luôn là ACTIVE để FE không cần xử lý gì thêm
+
         if (u.getRole() != UserRole.PROVIDER) {
             return ResponseEntity.ok(Map.of("status", "ACTIVE", "message", "Bạn đăng nhập bình thường!"));
         }
@@ -351,7 +351,7 @@ public class ApiServiceProviderController {
             return ResponseEntity.badRequest().body(Map.of("error", "Không tìm thấy thông tin nhà cung cấp"));
         }
 
-        // Cập nhật user info
+
         if (dto.getFirstName() != null) {
             user.setFirstName(dto.getFirstName());
         }
@@ -372,7 +372,7 @@ public class ApiServiceProviderController {
             user.setPhoneNumber(dto.getPhoneNumber());
         }
 
-        // Upload avatar nếu có
+
         if (dto.getAvatar() != null && !dto.getAvatar().isEmpty()) {
             try {
                 String imageUrl = cloudinaryService.uploadImage(dto.getAvatar(), "avatar")
@@ -384,7 +384,7 @@ public class ApiServiceProviderController {
             }
         }
 
-        // Cập nhật tên công ty
+
         if (dto.getCompanyName() != null) {
             provider.setCompanyName(dto.getCompanyName());
         }

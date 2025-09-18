@@ -32,7 +32,7 @@ public class ProviderRatingResponseDTO {
         this.createdDate = createdDate;
     }
 
-    // Getter & Setter
+
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public Integer getUserId() { return userId; }

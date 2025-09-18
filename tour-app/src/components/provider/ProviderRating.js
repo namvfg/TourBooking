@@ -41,12 +41,12 @@ const ProviderRating = ({ providerId, currentUser, onAvgRatingChange }) => {
 
     const navigate = useNavigate();
 
-    // Tính trung bình rating
+
     const avgRating = ratings.length > 0
         ? (ratings.reduce((acc, cur) => acc + cur.rate, 0) / ratings.length).toFixed(1)
         : null;
 
-    // Gửi avgRating về ProviderDetail mỗi khi ratings thay đổi
+
     useEffect(() => {
         if (onAvgRatingChange) onAvgRatingChange(avgRating, ratings.length);
     }, [avgRating, ratings.length, onAvgRatingChange]);
@@ -129,7 +129,7 @@ const ProviderRating = ({ providerId, currentUser, onAvgRatingChange }) => {
                         Đánh giá & bình luận của người dùng
                     </h5>
 
-                    {/* Hiển thị trung bình sao phía trên danh sách đánh giá */}
+
                     {avgRating && (
                         <div style={{ fontSize: "1.25rem", color: "#FFD700", fontWeight: 600, marginBottom: 12, textAlign: "center" }}>
                             ★ {avgRating} / 5 ({ratings.length} đánh giá)

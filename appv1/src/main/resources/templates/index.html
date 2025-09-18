@@ -13,7 +13,7 @@
     <div class="container">
         <h1 class="text-center">BÁO CÁO VÀ PHÂN TÍCH</h1>
 
-        <!-- Form lọc tháng/năm bằng lịch (month picker) -->
+
         <form method="get" class="row g-3 mb-4 align-items-center">
             <div class="col-auto">
                 <input type="month" class="form-control" name="monthYear"
@@ -76,7 +76,7 @@
 
         <h2 class="text-center">THỐNG KÊ DỊCH VỤ</h2>
         <div class="row">
-            <!-- Biểu đồ cột số lượng dịch vụ theo loại -->
+
             <div class="col-md-6 mb-4">
                 <div class="card">
                     <div class="card-body">
@@ -85,7 +85,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Biểu đồ tròn phần trăm dịch vụ theo loại -->
+
             <div class="col-md-6 mb-4">
                 <div class="card">
                     <div class="card-body">
@@ -97,7 +97,7 @@
         </div>
 
         <div class="row">
-            <!-- Biểu đồ cột doanh thu theo loại dịch vụ -->
+
             <div class="col-md-6 mb-4">
                 <div class="card">
                     <div class="card-body">
@@ -106,7 +106,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Biểu đồ tròn tỷ lệ doanh thu theo loại dịch vụ -->
+
             <div class="col-md-6 mb-4">
                 <div class="card">
                     <div class="card-body">
@@ -120,19 +120,19 @@
 
     <div th:replace="base :: footer"></div>
     <script th:inline="javascript">
-        // Dữ liệu từ backend (Thymeleaf sẽ render thành object JS tương ứng)
+        
         let serviceTypeCount = /*[[${serviceTypeCount}]]*/ {};
         let revenueByType = /*[[${revenueByType}]]*/ {};
 
-        // Số lượng dịch vụ từng loại
+
         let typeLabels = Object.keys(serviceTypeCount);
         let typeValues = Object.values(serviceTypeCount);
 
-        // Doanh thu từng loại dịch vụ
+
         let revenueLabels = Object.keys(revenueByType);
         let revenueValues = Object.values(revenueByType);
 
-        // Biểu đồ cột số lượng dịch vụ theo loại
+
         if (document.getElementById('serviceTypeBar')) {
             new Chart(document.getElementById('serviceTypeBar'), {
                 type: 'bar',
@@ -148,7 +148,7 @@
             });
         }
 
-        // Biểu đồ tròn tỷ lệ số lượng dịch vụ theo loại (hiện tỷ lệ %)
+
         if (document.getElementById('serviceTypePie')) {
             new Chart(document.getElementById('serviceTypePie'), {
                 type: 'pie',
@@ -206,7 +206,7 @@
             });
         }
 
-        // Biểu đồ tròn tỷ lệ doanh thu theo loại dịch vụ (hiện tỷ lệ %)
+
         if (document.getElementById('revenueTypePie')) {
             new Chart(document.getElementById('revenueTypePie'), {
                 type: 'pie',
@@ -237,7 +237,7 @@
             });
         }
 
-        // Tự động submit form khi chọn tháng/năm
+
         document.addEventListener('DOMContentLoaded', function() {
             var monthInput = document.querySelector('input[name="monthYear"]');
             if (monthInput) {

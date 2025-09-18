@@ -58,11 +58,11 @@ public class WebAppContextConfigs implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // Áp dụng cho tất cả endpoint
-                .allowedOrigins("http://localhost:3000") // Origin được phép
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
-                .allowedHeaders("*") // Cho phép tất cả header
+                .allowedHeaders("*")
                 .exposedHeaders("Access-Control-Allow-Origin")
-                .allowCredentials(true); // Cho phép gửi cookie hoặc authentication headers
+                .allowCredentials(true);
     }
 }

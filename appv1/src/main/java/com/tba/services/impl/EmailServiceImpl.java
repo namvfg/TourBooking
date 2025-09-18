@@ -31,7 +31,7 @@ public class EmailServiceImpl implements EmailService {
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text + FOOTER);
-        message.setFrom(fromAddress); // Gmail của bạn
+        message.setFrom(fromAddress); 
         mailSender.send(message);
     }
 

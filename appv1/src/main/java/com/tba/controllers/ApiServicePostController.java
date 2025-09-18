@@ -38,6 +38,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.MediaType;
 
+/**
+ *
+ * @author Admin
+ */
+
 @RestController
 @RequestMapping("/api")
 public class ApiServicePostController {
@@ -330,7 +335,6 @@ public class ApiServicePostController {
         dto.setServiceProviderId(post.getServiceProviderId().getId());
         dto.setCompanyName(post.getServiceProviderId().getCompanyName());
 
-        // Thêm thông tin chi tiết nếu có
         if ("ROOM".equals(dto.getServiceType()) && post.getRoom() != null) {
             dto.setRoomStartDate(post.getRoom().getStartDate());
             dto.setRoomEndDate(post.getRoom().getEndDate());

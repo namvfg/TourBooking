@@ -8,7 +8,7 @@ export const endpoints = {
   "service-post-list": "/service-post/all",
   "service-post-detail": "/service-post",
 
-  // user
+
   "register": "/register",
   "profile": "/secure/profile",
   "user-update-profile": "/secure/users/update-profile",
@@ -17,7 +17,7 @@ export const endpoints = {
   "service-post-search": "/service-post/search",
   "user-transactions": "/secure/transaction/user",
 
-  // provider
+
   "provider-register": "/provider/register",
   "provider-profile": "/secure/provider/profile",
   "provider-update-profile": "/secure/provider/update-profile",
@@ -29,16 +29,16 @@ export const endpoints = {
   "provider-add-rating": (id) => `/secure/provider/${id}/rating`,
   "provider-transactions": (postId) => `/secure/transaction/service-post/${postId}`,
 
-  // service-post CRUD
+
   "service-post-add": "/secure/service-post/add",
   "service-post-edit": "/secure/service-post/edit",
   "service-post-delete": "/secure/service-post/delete",
 
-  // enums
+
   "service-types": "/enums/service-types",
   "payment-methods": "/enums/transaction-types",
 
-  // upload image cho CKEditor
+
   "upload-image": "/secure/upload-image"
 };
 

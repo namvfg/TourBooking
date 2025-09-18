@@ -17,15 +17,15 @@ export const CustomUploadAdapter = (loader) => {
             });
 
             return {
-                default: res.data.url, // CKEditor expects a "default" field
+                default: res.data.url, 
             };
         }
     };
 };
 
-// This is the plugin that injects the adapter
+
 export function UploadAdapterPlugin(editor) {
     editor.plugins.get("FileRepository").createUploadAdapter = (loader) => {
-        return CustomUploadAdapter(loader); // 
+        return CustomUploadAdapter(loader); 
     };
 }

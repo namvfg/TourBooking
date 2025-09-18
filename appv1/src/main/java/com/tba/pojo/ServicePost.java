@@ -69,7 +69,7 @@ public class ServicePost implements Serializable {
     @Size(max = 500)
     @Column(name = "image")
     private String image;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    
     @Basic(optional = false)
     @NotNull
     @Column(name = "price")
@@ -267,7 +267,7 @@ public class ServicePost implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+
         if (!(object instanceof ServicePost)) {
             return false;
         }

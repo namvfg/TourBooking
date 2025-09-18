@@ -1,5 +1,10 @@
 package com.tba.repositories.impl;
 
+/**
+ *
+ * @author HP Zbook 15
+ */
+
 import com.tba.pojo.Room;
 import com.tba.repositories.RoomRepository;
 import org.hibernate.Session;
