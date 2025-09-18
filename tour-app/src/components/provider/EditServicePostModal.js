@@ -88,7 +88,7 @@ const EditServicePostModal = ({ show, onHide, post, onUpdated }) => {
             });
             toast.success("Cập nhật thành công!");
 
-            if (onUpdated) onUpdated(); // callback reload data ngoài detail
+            if (onUpdated) onUpdated(); 
             onHide();
         } catch (err) {
             toast.error("Lỗi cập nhật! " + (err?.response?.data || err.message));
@@ -118,11 +118,11 @@ const EditServicePostModal = ({ show, onHide, post, onUpdated }) => {
                     </Form.Group>
                     <Form.Group>
                         <Form.Label>Giá</Form.Label>
-                        <Form.Control name="price" type="number" value={editData.price} onChange={handleEditChange} required />
+                        <Form.Control name="price" type="number" min="0" value={editData.price} onChange={handleEditChange} required />
                     </Form.Group>
                     <Form.Group>
                         <Form.Label>Số lượng slot</Form.Label>
-                        <Form.Control name="availableSlot" type="number" value={editData.availableSlot} onChange={handleEditChange} required />
+                        <Form.Control name="availableSlot" type="number" min="0" value={editData.availableSlot} onChange={handleEditChange} required />
                     </Form.Group>
                     <Form.Group>
                         <Form.Label>Địa chỉ</Form.Label>
@@ -141,7 +141,7 @@ const EditServicePostModal = ({ show, onHide, post, onUpdated }) => {
                         <Form.Label>Ảnh (nếu muốn đổi)</Form.Label>
                         <Form.Control name="image" type="file" accept="image/*" onChange={handleEditChange} />
                     </Form.Group>
-                    {/* Các field phụ tùy loại dịch vụ */}
+
                     {editData.serviceType === "ROOM" && (
                         <>
                             <Form.Group>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios, { endpoints } from "./configs/Apis";
 import { Card, Row, Col, Spinner, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -13,14 +13,20 @@ const ServicePostList = ({ reloadCount = 0 }) => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-  
+
     const [keyword, setKeyword] = useState("");
     const [serviceType, setServiceType] = useState("");
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
 
-    
-    const loadPosts = async (p = 0) => {
+
+    const [keywordInput, setKeywordInput] = useState("");
+    const [serviceTypeInput, setServiceTypeInput] = useState("");
+    const [minPriceInput, setMinPriceInput] = useState("");
+    const [maxPriceInput, setMaxPriceInput] = useState("");
+
+
+    const loadPosts = useCallback(async (p = 0) => {
         setLoading(true);
         setError("");
         try {
@@ -76,19 +82,22 @@ const ServicePostList = ({ reloadCount = 0 }) => {
             setTotal(0);
         }
         setLoading(false);
-    };
+    }, [keyword, serviceType, minPrice, maxPrice, size]);
 
 
     useEffect(() => {
         loadPosts(page);
-    }, [page, size, reloadCount, keyword, serviceType, minPrice, maxPrice]);
+    }, [page, size, reloadCount, keyword, serviceType, minPrice, maxPrice, loadPosts]);
 
     const handlePrev = () => { if (page > 0) setPage(page - 1); };
     const handleNext = () => { if (page < totalPages - 1) setPage(page + 1); };
 
     const handleSearch = () => {
-        setPage(0); 
-        loadPosts(0);
+        setKeyword(keywordInput);
+        setServiceType(serviceTypeInput);
+        setMinPrice(minPriceInput);
+        setMaxPrice(maxPriceInput);
+        setPage(0);
     };
 
     return (
@@ -98,14 +107,14 @@ const ServicePostList = ({ reloadCount = 0 }) => {
                     type="text"
                     className="form-control"
                     placeholder="Tìm tên dịch vụ..."
-                    value={keyword}
-                    onChange={e => setKeyword(e.target.value)}
+                    value={keywordInput}
+                    onChange={e => setKeywordInput(e.target.value)}
                     style={{ maxWidth: "220px" }}
                 />
                 <select
                     className="form-select"
-                    value={serviceType}
-                    onChange={e => setServiceType(e.target.value)}
+                    value={serviceTypeInput}
+                    onChange={e => setServiceTypeInput(e.target.value)}
                     style={{ maxWidth: "140px" }}
                 >
                     <option value="">Tất cả loại</option>
@@ -117,16 +126,16 @@ const ServicePostList = ({ reloadCount = 0 }) => {
                     type="number"
                     className="form-control"
                     placeholder="Giá tối thiểu"
-                    value={minPrice}
-                    onChange={e => setMinPrice(e.target.value)}
+                    value={minPriceInput}
+                    onChange={e => setMinPriceInput(e.target.value)}
                     style={{ maxWidth: "150px" }}
                 />
                 <input
                     type="number"
                     className="form-control"
                     placeholder="Giá tối đa"
-                    value={maxPrice}
-                    onChange={e => setMaxPrice(e.target.value)}
+                    value={maxPriceInput}
+                    onChange={e => setMaxPriceInput(e.target.value)}
                     style={{ maxWidth: "150px" }}
                 />
                 <button className="btn btn-primary" onClick={handleSearch}>
